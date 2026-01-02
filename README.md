@@ -1,6 +1,3 @@
-# Rock_Still_Rolls
-The project is dedicated to highlighting the world of rock music
-
 Music Project (Rock Still Rolls)
 Современное веб-приложение для любителей рок-музыки, объединяющее новости, афишу событий и возможности для общения.
 
@@ -8,13 +5,9 @@ Music Project (Rock Still Rolls)
 
 Frontend: React (Vite), SCSS (Sass), Zustand (для управления состоянием).
 
-
-
 Backend: Node.js, Express.
 
-
 Database: Prisma ORM (PostgreSQL/MySQL).
-
 
 Стиль: Модульный SCSS с методологией BEM/Atomic.
 
@@ -22,15 +15,9 @@ Database: Prisma ORM (PostgreSQL/MySQL).
 
 Аутентификация: Поддержка стандартного входа и OAuth.
 
-
-
 Контент: Система статей с категориями, полнотекстовым поиском и бесконечной прокруткой.
 
-
-
 Интерактив: Комментарии, система уведомлений в реальном времени и голосование.
-
-
 
 Админ-панель: Полное управление контентом, модерация новостей и пользователей.
 
@@ -40,15 +27,11 @@ Database: Prisma ORM (PostgreSQL/MySQL).
 
 /server: API роуты (статьи, комментарии, уведомления, ауто.).
 
-
 /prisma: Схема базы данных и файлы миграций.
-
 
 /src/components: Модульные UI-компоненты ( Auth, NewsCarousel и др.).
 
-
 /src/store: Глобальное состояние через Zustand (auth, comments, notifications).
-
 
 /src/pages: Основные страницы (Main, News, Events, Performers, Profile).
 
