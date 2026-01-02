@@ -1,0 +1,127 @@
+/**
+ * ГЛОБАЛЬНЫЕ МИКСИНЫ (_mixins.scss)
+ * ---------------------------------
+ * Назначение: Упрощение адаптивной верстки (Responsive Design) и повторное использование стилей.
+ * Файл содержит инструменты для управления медиа-запросами через именованные брейкпоинты.
+ */
+
+@use '../../../assets/styles/abstracts/variables' as variables;
+
+// ==========================================
+// 1. УЗКОСПЕЦИАЛИЗИРОВАННЫЕ МИКСИНЫ
+// ==========================================
+// Используются для адаптации конкретных типов элементов по фиксированным значениям PX.
+
+@mixin menu_toggle($px) {
+    @media (max-width: $px) {
+        @content;
+    }
+}
+
+@mixin img($px) {
+    @media (max-width: $px) {
+        @content;
+    }
+}
+
+@mixin nav_block($px) {
+    @media (max-width: $px) {
+        @content;
+    }
+}
+
+@mixin nav_links($px) {
+    @media (max-width: $px) {
+        @content;
+    }
+}
+
+@mixin li($px) {
+    @media (max-width: $px) {
+        @content;
+    }
+}
+
+@mixin a($px) {
+    @media (max-width: $px) {
+        @content;
+    }
+}
+
+@mixin h2($px) {
+    @media (max-width: $px) {
+        @content;
+    }
+}
+
+@mixin read_more($px) {
+    @media (max-width: $px) {
+        @content;
+    }
+}
+
+// ==========================================
+// 2. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+// ==========================================
+
+/**
+ * Функция: get-breakpoint-value
+ * Назначение: Возвращает числовое значение из глобальных переменных по ключу (sm, md, lg и т.д.)
+ */
+@function get-breakpoint-value($bp-name) {
+  @if $bp-name == sm { @return variables.$breakpoint-sm; } 
+  @else if $bp-name == md { @return variables.$breakpoint-md; }
+  @else if $bp-name == lg { @return variables.$breakpoint-lg; }
+  @else if $bp-name == lgn { @return variables.$breakpoint-lg-next; }
+  @else if $bp-name == xl { @return variables.$breakpoint-xl; }
+  @else if $bp-name == xxl { @return variables.$breakpoint-xxl; }
+  @else { @return $bp-name; } 
+}
+
+// ==========================================
+// 3. УНИВЕРСАЛЬНЫЕ МАРШРУТИЗАТОРЫ (BREAKPOINTS)
+// ==========================================
+// Позволяют писать адаптивные стили, используя названия брейкпоинтов вместо цифр.
+
+
+
+/**
+ * Миксин: width-range
+ * Назначение: Стили применяются только в диапазоне МЕЖДУ двумя брейкпоинтами.
+ * Пример: @include width-range(sm, md) { ... }
+ */
+@mixin width-range($min-bp, $max-bp) {
+    @media (min-width: get-breakpoint-value($min-bp)) and (max-width: get-breakpoint-value($max-bp)) {
+        @content;
+    }
+}
+
+/**
+ * Миксин: max-width
+ * Назначение: Desktop-First подход. Стили применяются для экранов МЕНЬШЕ указанного значения.
+ */
+@mixin max-width($bp) {
+    @media (max-width: get-breakpoint-value($bp)) {
+        @content;
+    }
+}
+
+/**
+ * Миксин: min-width
+ * Назначение: Mobile-First подход. Стили применяются для экранов БОЛЬШЕ указанного значения.
+ */
+@mixin min-width($bp) {
+    @media (min-width: get-breakpoint-value($bp)) {
+        @content;
+    }
+}
+
+/**
+ * Миксин: min-height
+ * Назначение: Адаптация под вертикальный размер экрана.
+ */
+@mixin min-height($bp) {
+    @media (min-height: get-breakpoint-value($bp)) {
+        @content;
+    }
+}

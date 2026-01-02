@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// Модель пользователя системы. Хранит данные профиля, учетные данные и связи с активностями.
+model User {
+  id        Int     @id @default(autoincrement())
+  email     String  @unique
+  password  String? // Необязательное поле для пользователей, зашедших через OAuth
+  name      String?
+  avatarUrl String? @map("avatar_url")
+  isAdmin   Boolean @default(false) @map("is_admin")
+
+  // OAuth поля для интеграции со сторонними сервисами
+  googleId String? @unique @map("google_id")
+  githubId String? @unique @map("github_id")
+  provider String? // Тип провайдера: "local", "google", "github"
+
+  // Обратные связи (Relations)
+  articles          Article[]
+  comments          Comment[] 
+  commentVotes      CommentVote[]
+  notifications     Notification[]         @relation("NotificationTo") // Полученные уведомления
+  sentNotifications Notification[]         @relation("NotificationFrom") // Уведомления, вызванные действием этого пользователя
+
+  @@map("users")
+}
+
+/// Категории для классификации статей.
+model Category {
+  id       Int                 @id @default(autoincrement())
+  name     String              @unique @db.VarChar(50)
+  articles ArticleOnCategory[] // Связь многие-ко-многим через промежуточную таблицу
+
+  @@map("categories")
+}
+
+/// Модель статьи (поста). Основная единица контента.
+model Article {
+  id        Int       @id @default(autoincrement())
+  title     String    @db.VarChar(255)
+  content   String    @db.Text
+  excerpt   String?   @db.Text
+  image     String?   @db.VarChar(500)
+  status    String    @default("DRAFT") // Статусы: DRAFT, PUBLISHED
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  authorId Int  @map("author_id")
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  categories ArticleOnCategory[]
+  comments   Comment[]
+
+  @@index([authorId])
+  @@map("articles")
+}
+
+/// Промежуточная таблица для связи статей и категорий (Many-to-Many).
+model ArticleOnCategory {
+  articleId  Int @map("article_id")
+  categoryId Int @map("category_id")
+
+  article  Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, categoryId])
+  @@map("article_categories")
+}
+
+/// Комментарии к статьям с поддержкой древовидной структуры (ответы на комментарии).
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  authorId Int  @map("author_id")
+  author   User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  articleId Int     @map("article_id")
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  // Иерархия комментариев (Self-relation)
+  parentId Int?      @map("parent_id")
+  parent   Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("CommentReplies")
+
+  // Система рейтинга
+  likes    Int @default(0)
+  dislikes Int @default(0)
+
+  votes         CommentVote[]
+  notifications Notification[]
+
+  @@index([articleId])
+  @@index([authorId])
+  @@index([parentId])
+  @@map("comments")
+}
+
+/// Система голосования за комментарии (защита от повторных голосов).
+model CommentVote {
+  userId    Int
+  commentId Int
+  type      String @db.VarChar(10) // 'LIKE' или 'DISLIKE'
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@id([userId, commentId])
+  @@map("comment_votes")
+}
+
+/// Уведомления пользователей о событиях (новые комментарии, лайки и т.д.).
+model Notification {
+  id      Int     @id @default(autoincrement())
+  type    String  // Тип события, например: "NEW_COMMENT", "REPLY"
+  message String
+  read    Boolean @default(false)
+  link    String? // Ссылка на объект (статью/комментарий), к которому относится уведомление
+
+  userId Int  @map("user_id") // Кому предназначено
+  user   User @relation("NotificationTo", fields: [userId], references: [id], onDelete: Cascade)
+
+  fromUserId Int?  @map("from_user_id") // Кто инициировал событие
+  fromUser   User? @relation("NotificationFrom", fields: [fromUserId], references: [id], onDelete: SetNull)
+
+  commentId Int?     @map("comment_id") // Опциональная связь с конкретным комментарием
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("notifications")
+}

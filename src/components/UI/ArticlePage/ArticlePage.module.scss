@@ -1,0 +1,285 @@
+.article_block {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    color: var(--color);
+    font-family: "Roboto Flex", sans-serif;
+    line-height: 2rem;
+    
+    h1 {
+        font-size: 1.4rem;
+        margin-bottom: 1.5rem;
+        color: var(--color);
+    }
+    
+    .pub_date {
+        color: #666;
+        font-size: 1rem;
+    }
+}
+
+/* Главное изображение статьи */
+.featuredImage {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Дата публикации */
+.pub_date {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+/* Состояния загрузки, ошибки и отсутствия статьи */
+.loading,
+.error,
+.notFound {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.1rem;
+}
+
+.error {
+  color: #ef4444;
+}
+
+/* Содержимое статьи с поддержкой Markdown */
+.article_content {
+  line-height: 1.5;
+  color: var(--color);
+
+  /* Стили для обычного текста */
+  p {
+    font-size: 1.1rem;
+  }
+
+  /* Контейнер для встроенного видео */
+  :global(.video-embed) {
+    margin: 2rem 0;
+    
+    /* Контейнер iframe с адаптивным соотношением сторон 16:9 */
+    > div {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      background: #000;
+      
+      iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 12px;
+      }
+    }
+    
+    /* Подпись к видео */
+    figcaption {
+      margin-top: 0.75rem;
+      font-size: 0.9em;
+      color: #666;
+      font-style: italic;
+      text-align: center;
+      padding: 0 1rem;
+    }
+  }
+
+  /* Специальные эмодзи для разных видеоплатформ */
+  :global(.video-embed-youtube) {
+    figcaption::before {
+      content: "🎥 ";
+    }
+  }
+
+  :global(.video-embed-vimeo) {
+    figcaption::before {
+      content: "📹 ";
+    }
+  }
+
+  :global(.video-embed-rutube) {
+    figcaption::before {
+      content: "🎬 ";
+    }
+  }
+
+  :global(.video-embed-vk) {
+    figcaption::before {
+      content: "🎞️ ";
+    }
+  }
+
+  /* Стили для изображений с подписями */
+  figure {
+    margin: 2rem 0;
+    text-align: center;
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    figcaption {
+      margin-top: 0.5rem;
+      font-size: 0.85em;
+      color: #666;
+      font-style: italic;
+    }
+  }
+
+  /* Стили для заголовков Markdown */
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.7rem;
+  }
+
+  h3 {
+    font-size: 1.4rem;
+  }
+
+  /* Стили для абзацев */
+  p {
+    margin-bottom: 1.2rem;
+  }
+
+  /* Стили для списков */
+  ul, ol {
+    margin-bottom: 1.2rem;
+    padding-left: 2rem;
+  }
+
+  li {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Стили для ссылок */
+  a {
+    color: var(--hover-link-color);
+    text-decoration: none;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.8;
+      text-decoration: underline;
+    }
+  }
+
+  /* Стили для цитат */
+  blockquote {
+    border-left: 4px solid var(--hover-link-color);
+    padding-left: 1.5rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: #666;
+  }
+
+  /* Стили для inline-кода */
+  code {
+    background: var(--hover-link-background-color);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+  }
+
+  /* Стили для блоков кода */
+  pre {
+    background: var(--hover-link-background-color);
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+
+    code {
+      background: none;
+      padding: 0;
+    }
+  }
+
+  /* Стили для таблиц */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+
+    th, td {
+      border: 1px solid var(--hover-link-background-color);
+      padding: 0.75rem;
+      text-align: left;
+    }
+
+    th {
+      background: var(--hover-link-background-color);
+      font-weight: 600;
+    }
+  }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .article_block {
+    padding: 1rem;
+  }
+
+  .article_content {
+    font-size: 1rem;
+
+    /* Адаптивные размеры заголовков */
+    h1 {
+      font-size: 1.6rem;
+    }
+
+    h2 {
+      font-size: 1.4rem;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+    }
+
+    /* Адаптивные стили для видео */
+    :global(.video-embed) {
+      margin: 1.5rem 0;
+
+      figcaption {
+        font-size: 0.85em;
+        padding: 0 0.5rem;
+      }
+    }
+  }
+}
+
+/* Эффекты при наведении для видео (только на устройствах с hover) */
+@media (hover: hover) {
+  .article_content {
+    :global(.video-embed) > div {
+      transition: transform 0.2s, box-shadow 0.2s;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+}

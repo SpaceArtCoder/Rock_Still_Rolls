@@ -1,0 +1,85 @@
+@use '../../../assets/styles/abstracts/mixins' as mixins;
+
+/* Базовый блок навигации */
+.nav_block {
+    font-family: var(--font-family);
+    font-weight: var(--font-weight);
+    line-height: var(--line-height);
+    display: flex;  
+    flex-direction: row;
+    position: relative;
+    
+    .nav_links {
+        display: flex;
+        flex-direction: row;
+        margin: auto;
+
+        /* Адаптивность для мобильных устройств */
+        @include mixins.max-width(sm) {
+            padding: 0;
+            width: 100%;
+        }
+        
+        li {
+            font-size: medium;
+            padding: 0;
+            
+            a {
+                color: var(--color);
+                padding: 1.1rem 2.1rem 1.1rem 2.1rem;
+                
+                /* Эффект при наведении на ссылку */
+                &:hover {
+                    background-color: var(--hover-link-background-color);
+                    color: var(--hover-link-color);
+                    transition: 1s;
+                }
+
+                /* Адаптивность для мобильных устройств */
+                @include mixins.max-width(sm) {
+                    padding: 0;
+                    font-size: 0.8rem;
+                }
+
+                /* Адаптивность для планшетов */
+                @include mixins.width-rage(md, lg) {
+                    padding: 0;
+                }
+            }
+        }
+    }
+
+    /* Скрытие навигации на мобильных устройствах */
+    @include mixins.max-width(sm) {
+        display: none;
+    }
+
+    /* Вертикальное направление ссылок для футера */
+    .footer_links_flex_direction {
+        flex-direction: column;
+    }
+}
+
+/* Модификатор для ссылок в футере */
+.show_footer_links {
+    width: 20%;
+    
+    /* Адаптивность для мобильных устройств */
+    @include mixins.max-width(sm) {
+        width: 30%;
+        display: flex;
+    }
+}
+
+/* Модификатор для ссылок в гамбургер-меню */
+.show_ham_menu_links {
+    a {
+        font-size: 2rem !important;
+    }
+    
+    /* Отображение на мобильных устройствах */
+    @include mixins.max-width(sm) {
+        display: flex;
+        margin: auto;
+    }
+}

@@ -1,0 +1,165 @@
+/* --- Контейнеры и Общие стили --- */
+.formContainer {
+    max-width: 56rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 2rem;
+    background-color: #f9fafb;
+    border-radius: 0.75rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    margin-top: 2.5rem;
+    margin-bottom: 2.5rem;
+    color: black;
+}
+
+/* Заголовок формы */
+.title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 0.5rem;
+}
+
+/* Контейнер формы */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* --- Fieldset (Группы полей) --- */
+.fieldSet {
+    padding: 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background-color: #ffffff;
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Заголовок группы полей */
+.fieldSetTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #374151;
+}
+
+/* Группа полей формы */
+.formGroup {
+    margin-bottom: 1rem;
+}
+
+/* --- Элементы формы --- */
+/* Метка поля */
+.label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
+}
+
+/* Общие стили для полей ввода */
+.input, .textarea, .select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    transition: all 0.15s ease-in-out;
+
+    &:focus {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5);
+    }
+}
+
+/* Текстовое поле с возможностью изменения высоты */
+.textarea {
+    resize: vertical;
+}
+
+/* Выпадающий список */
+.select {
+    background-color: #ffffff;
+}
+
+/* Подсказка под полем ввода */
+.hint {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+}
+
+/* --- Блок сообщений (Message Box) --- */
+/* Базовые стили для блока сообщений */
+.messageBox {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+/* Блок сообщения об успехе */
+.successBox {
+    @extend .messageBox;
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+/* Блок сообщения об ошибке */
+.errorBox {
+    @extend .messageBox;
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* --- Кнопки и Действия --- */
+/* Контейнер для кнопок действий */
+.formActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding-top: 1rem;
+}
+
+/* Базовые стили кнопок */
+.button {
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    transform-origin: center;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+        transform: scale(1.02);
+    }
+}
+
+/* Кнопка "Сохранить черновик" */
+.draftButton {
+    @extend .button;
+    background-color: #6b7280;
+    color: white;
+
+    &:hover {
+        background-color: #4b5563;
+    }
+}
+
+/* Кнопка "Опубликовать" */
+.publishButton {
+    @extend .button;
+    background-color: #4f46e5;
+    color: white;
+
+    &:hover {
+        background-color: #4338ca;
+    }
+}

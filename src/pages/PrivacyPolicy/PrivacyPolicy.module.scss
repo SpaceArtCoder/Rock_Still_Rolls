@@ -1,0 +1,237 @@
+/* Основной контейнер страницы политики конфиденциальности */
+.privacyPolicy {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 40px 20px;
+}
+
+/* Контейнер содержимого с ограничением ширины */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  background: white;
+  padding: 60px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+  /* Адаптивность для планшетов и мобильных */
+  @media (max-width: 768px) {
+    padding: 30px 20px;
+  }
+}
+
+/* Главный заголовок страницы */
+h1 {
+  font-size: 42px;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 12px 0;
+  line-height: 1.2;
+
+  @media (max-width: 768px) {
+    font-size: 32px;
+  }
+}
+
+/* Блок с датой последнего обновления */
+.lastUpdated {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0 0 40px 0;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+/* Секции политики конфиденциальности */
+.section {
+  margin: 40px 0;
+
+  /* Первая секция без верхнего отступа */
+  &:first-of-type {
+    margin-top: 0;
+  }
+
+  /* Заголовок второго уровня в секции */
+  h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 20px 0;
+    padding-bottom: 12px;
+    border-bottom: 3px solid #3b82f6;
+
+    @media (max-width: 768px) {
+      font-size: 24px;
+    }
+  }
+
+  /* Заголовок третьего уровня в секции */
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #334155;
+    margin: 24px 0 12px 0;
+
+    @media (max-width: 768px) {
+      font-size: 18px;
+    }
+  }
+
+  /* Заголовок четвертого уровня в секции */
+  h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #475569;
+    margin: 16px 0 8px 0;
+  }
+
+  /* Основной текст секции */
+  p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #475569;
+    margin: 0 0 16px 0;
+
+    @media (max-width: 768px) {
+      font-size: 15px;
+    }
+  }
+
+  /* Списки в секции */
+  ul, ol {
+    margin: 16px 0;
+    padding-left: 24px;
+
+    /* Элементы списка */
+    li {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #475569;
+      margin-bottom: 8px;
+
+      @media (max-width: 768px) {
+        font-size: 15px;
+      }
+
+      /* Выделение жирным шрифтом */
+      strong {
+        color: #1e293b;
+        font-weight: 600;
+      }
+    }
+  }
+
+  /* Ссылки в тексте */
+  a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #2563eb;
+      text-decoration: underline;
+    }
+  }
+}
+
+/* Блок предупреждения */
+.warning {
+  background: #fef3c7;
+  border-left: 4px solid #f59e0b;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+
+  strong {
+    color: #92400e;
+  }
+}
+
+/* Блок контактной информации */
+.contactInfo {
+  background: #dbeafe;
+  border-left: 4px solid #3b82f6;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+/* Тип файлов cookie */
+.cookieType {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 16px 0;
+  border-left: 4px solid #3b82f6;
+
+  h4 {
+    color: #1e293b;
+    margin-top: 0;
+  }
+
+  p {
+    margin: 8px 0;
+    color: #64748b;
+    font-size: 14px;
+  }
+
+  ul {
+    margin: 12px 0 0 0;
+
+    li {
+      font-size: 14px;
+      color: #475569;
+    }
+  }
+}
+
+/* Контактная информация */
+.contacts {
+  background: #f8fafc;
+  padding: 24px;
+  border-radius: 12px;
+  margin: 20px 0;
+
+  p {
+    margin: 12px 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  strong {
+    color: #1e293b;
+    display: inline-block;
+    min-width: 100px;
+  }
+
+  a {
+    color: #3b82f6;
+  }
+}
+
+/* Футер страницы */
+.footer {
+  margin-top: 60px;
+  padding-top: 30px;
+  border-top: 2px solid #e2e8f0;
+  text-align: center;
+
+  p {
+    color: #64748b;
+    font-size: 14px;
+    margin: 12px 0;
+  }
+}
+
+/* Копирайт */
+.copyright {
+  font-weight: 600;
+  color: #475569;
+}

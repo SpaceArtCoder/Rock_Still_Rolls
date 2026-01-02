@@ -1,0 +1,29 @@
+@use '../../../assets/styles/abstracts/mixins.scss' as mixins;
+
+.contact_us_container {
+    width: 100%;
+    background-color: var(--background-color);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around; // Равномерное распределение элементов по горизонтали
+    
+    /* Адаптивность для мобильных устройств */
+    @include mixins.max-width(sm) {
+        flex-direction: column; // Вертикальное расположение на мобильных
+    }
+    
+    .form_block {
+        outline: 3px solid #f7d80c8f; // Рамка с золотистым оттенком
+        border-radius: 0.8rem; // Закругление углов
+        padding: 1.5rem; // Внутренние отступы
+        margin: auto; // Центрирование по горизонтали
+        width: 40%; // Ширина блока на десктопе
+        background-color: #494949f5; // Фон с полупрозрачным темно-серым цветом
+
+        /* Адаптивность для мобильных устройств */
+        @include mixins.max-width(sm) {
+            width: 97%; // Практически полная ширина на мобильных
+            margin-top: 1.8rem; // Отступ сверху для отделения от заголовка
+        }
+    }
+}

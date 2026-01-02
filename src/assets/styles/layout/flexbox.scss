@@ -1,0 +1,61 @@
+/**
+ * СИСТЕМА СЕТОК (Grid System)
+ * ---------------------------
+ * Назначение: Создание гибких макетов на основе Flexbox.
+ * Структура: Container -> Row -> Col
+ */
+
+// 1. КОНТЕЙНЕР
+// Ограничивает контент по центру и добавляет безопасные отступы по бокам.
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+  width: 100%;
+}
+
+// 2. РЯД (Row)
+// Контейнер для колонок. Отрицательные маржи компенсируют паддинги колонок,
+// чтобы контент по краям выравнивался по линии контейнера.
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -15px;
+}
+
+// 3. БАЗОВАЯ КОЛОНКА (Col)
+// Общие стили для всех колонок.
+.col {
+  flex-basis: 0;
+  flex-grow: 1;
+  max-width: 100%;
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+// 4. СЕТКА ИЗ 12 КОЛОНОК
+// Математический расчет ширины каждой колонки (100% / 12 * N).
+
+.col-1  { flex: 0 0 8.33333%;   max-width: 8.33333%;   padding: 0 15px; }
+.col-2  { flex: 0 0 16.66667%;  max-width: 16.66667%;  padding: 0 15px; }
+.col-3  { flex: 0 0 25%;        max-width: 25%;        padding: 0 15px; }
+.col-4  { flex: 0 0 33.33333%;  max-width: 33.33333%;  padding: 0 15px; }
+.col-5  { flex: 0 0 41.66667%;  max-width: 41.66667%;  padding: 0 15px; }
+.col-6  { flex: 0 0 50%;        max-width: 50%;        padding: 0 15px; }
+.col-7  { flex: 0 0 58.33333%;  max-width: 58.33333%;  padding: 0 15px; }
+.col-8  { flex: 0 0 66.66667%;  max-width: 66.66667%;  padding: 0 15px; }
+.col-9  { flex: 0 0 75%;        max-width: 75%;        padding: 0 15px; }
+.col-10 { flex: 0 0 83.33333%;  max-width: 83.33333%;  padding: 0 15px; }
+.col-11 { flex: 0 0 91.66667%;  max-width: 91.66667%;  padding: 0 15px; }
+.col-12 { flex: 0 0 100%;       max-width: 100%;       padding: 0 15px; }
+
+/**
+ * 5. АДАПТИВНОСТЬ (Пример для мобильных устройств)
+ * На экранах меньше 768px все колонки становятся на всю ширину (100%).
+ */
+@media (max-width: 768px) {
+  [class*="col-"] {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}

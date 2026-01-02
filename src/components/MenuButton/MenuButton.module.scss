@@ -1,0 +1,62 @@
+@use '../../assets/styles/abstracts/mixins' as mixins;
+
+/* Базовые стили для кнопки меню */
+.menu_toggle,
+.menu_toggle_open {
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--color);
+  display: none;
+
+  /* Отображение на мобильных устройствах */
+  @include mixins.max-width(sm) {
+    display: flex;
+    z-index: 2;
+    position: relative;
+    left: 0.5rem;
+  }
+}
+
+/* Стили для закрытого состояния кнопки меню */
+.menu_toggle {
+  .line_top {
+    transform-origin: 16px 9.25px;
+    transform: rotate(0deg) translate(0, 0);
+    transition: transform 0.3s ease;
+  }
+
+  .line_middle {
+    opacity: 1;
+    transition: opacity 0.2s ease;
+  }
+
+  .line_bottom {
+    transform-origin: 16px 22.75px;
+    transform: rotate(0deg) translate(0, 0);
+    transition: transform 0.3s ease;
+  }
+}
+
+/* Стили для открытого состояния кнопки меню */
+.menu_toggle_open {
+  .line_top {
+    transform-origin: 16px 9.25px;
+    transform: rotate(45deg) translate(4.5px, 4.5px);
+    transition: transform 0.3s ease;
+  }
+
+  .line_middle {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .line_bottom {
+    transform-origin: 16px 22.75px;
+    transform: rotate(-45deg) translate(4.5px, -4.5px);
+    transition: transform 0.3s ease;
+  }
+}

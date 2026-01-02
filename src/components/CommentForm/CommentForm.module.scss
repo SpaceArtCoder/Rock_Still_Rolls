@@ -1,0 +1,185 @@
+/**
+ * Стили для компонента формы комментариев
+ * Включает стили для самой формы, шапки, полей ввода и состояний
+ */
+
+.comment_form {
+    /* Основной контейнер формы */
+    background-color: var(--hover-link-background-color);
+    padding: 15px;
+    border-radius: 0.8rem;
+    margin-bottom: 30px;
+
+    /* Шапка формы с информацией о пользователе */
+    .header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        font-size: 0.9em;
+        color: #555;
+        
+        /* Аватар пользователя */
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+            border: 2px solid #ddd;
+        }
+
+        /* Текст с информацией о пользователе */
+        p {
+            margin-bottom: 0;
+            font-size: 1.3rem;
+        }
+    }
+
+    /* Текстовое поле для ввода комментария */
+    textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 0.8rem;
+        resize: vertical; /* Разрешаем изменение высоты только по вертикали */
+        min-height: 80px; /* Минимальная высота */
+        box-sizing: border-box; /* Учитываем padding в общей ширине */
+        font-size: 1em;
+        margin-bottom: 10px;
+        
+        /* Поддержка темы (светлая/темная) */
+        background-color: var(--background-color);
+        color: var(--color);
+
+        /* Состояние фокуса */
+        &:focus {
+            box-shadow: 0 0 5px rgba(204, 0, 0, 0.2);
+            outline: none;
+        }
+        
+        /* Состояние disabled (во время отправки) */
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    }
+
+    /* Кнопка отправки комментария */
+    button[type="submit"] {
+        background-color: #c21113; /* Основной красный цвет */
+        color: var(--color);
+        border: none;
+        padding: 8px 15px;
+        border-radius: 0.8rem;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.2s;
+        font-size: 1em;
+        
+        /* Состояние наведения (только если кнопка активна) */
+        &:hover:not(:disabled) {
+            background-color: #990000; /* Темнее при наведении */
+        }
+        
+        /* Состояние disabled (отправка или пустое поле) */
+        &:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        /* Анимация при клике */
+        &:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+    }
+    
+    /* Дополнительные стили для формы ответа (если нужно уменьшить отступы) */
+    &.reply_form {
+        margin-top: 10px;
+        margin-bottom: 15px;
+        padding: 10px;
+    }
+}
+
+/* Стиль для сообщения "войдите в систему" */
+.login_prompt {
+    color: #888;
+    font-style: italic;
+    font-size: 1rem;
+    padding: 10px;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+    text-align: center;
+    margin-bottom: 30px;
+    
+    /* Анимация для привлечения внимания */
+    animation: fadeIn 0.3s ease-in;
+}
+
+/* Анимация появления */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 768px) {
+    .comment_form {
+        padding: 12px;
+        margin-bottom: 20px;
+        
+        .header {
+            flex-direction: column;
+            align-items: flex-start;
+            
+            .avatar {
+                margin-right: 0;
+                margin-bottom: 8px;
+            }
+            
+            p {
+                font-size: 1.1rem;
+            }
+        }
+        
+        textarea {
+            min-height: 70px;
+            font-size: 0.95em;
+        }
+        
+        button[type="submit"] {
+            width: 100%; /* На мобильных делаем кнопку на всю ширину */
+            padding: 10px;
+        }
+    }
+    
+    .login_prompt {
+        font-size: 0.95rem;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .comment_form {
+        padding: 10px;
+        border-radius: 0.6rem;
+        
+        textarea {
+            border-radius: 0.6rem;
+            min-height: 60px;
+            padding: 8px;
+        }
+        
+        button[type="submit"] {
+            border-radius: 0.6rem;
+            padding: 8px 12px;
+        }
+    }
+}

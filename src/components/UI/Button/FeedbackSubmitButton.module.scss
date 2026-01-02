@@ -1,0 +1,58 @@
+/* --- Базовые стили кнопки --- */
+.material_button {
+    /* Размеры и внешний вид */
+    padding: 10px 24px;
+    margin-top: 1rem;
+    border: none;
+    border-radius: 4px; /* Легкое скругление углов */
+    cursor: pointer;
+    text-transform: uppercase; /* Кнопки в Material Design часто в верхнем регистре */
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    font-size: 14px;
+    outline: none; /* Убираем стандартный фокус */
+    
+    /* Цвета (стиль основной кнопки Material Design) */
+    background-color: #f7d80c8f; /* Основной цвет - полупрозрачный золотистый */
+    color: #ffffff;
+    
+    /* Тень (элевация) - имитация тени уровня 2dp */
+    box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
+                0 2px 2px 0 rgba(0, 0, 0, 0.14),
+                0 1px 5px 0 rgba(0, 0, 0, 0.12);
+    
+    /* Плавные переходы для состояний */
+    transition: background-color 0.3s, box-shadow 0.3s, opacity 0.3s, transform 0.1s;
+}
+
+/* --- Состояние при наведении (немного темнее, уровень элевации 4dp) --- */
+.material_button:hover {
+    background-color: #f7d80cc6; /* Чуть светлее для визуальной обратной связи */
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2),
+                0 4px 5px 0 rgba(0, 0, 0, 0.14),
+                0 1px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+/* --- Состояние нажатия (самый высокий уровень элевации 8dp) --- */
+.material_button:active {
+    transform: translateY(1px); /* Эффект нажатия */
+    background-color: #f7d80c68; /* Темнее при нажатии */
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+                0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+/* --- Состояние фокуса (для доступности) --- */
+.material_button:focus {
+    /* Видимая подсветка фокуса */
+    box-shadow: 0 0 0 3px lab(74.55% -4.94 76.22 / 0.837); /* Свечение основного цвета */
+}
+
+/* --- Отключенное состояние --- */
+.material_button:disabled {
+    cursor: not-allowed;
+    /* Приглушенные цвета и отсутствие тени */
+    background-color: #e0e0e0; 
+    color: #a0a0a0;
+    box-shadow: none; 
+}

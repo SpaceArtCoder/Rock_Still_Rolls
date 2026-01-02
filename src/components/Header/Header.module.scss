@@ -1,0 +1,38 @@
+@use '../../assets/styles/abstracts/mixins' as mixins;
+
+.header {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    min-height: 71px;
+    justify-content: space-between;
+    background-color: rgba(43, 40, 40, 0.795);
+    position: fixed;
+    top: 0;
+    align-items: center;
+    z-index: 1;
+    backdrop-filter: blur(20px) contrast(80%);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+    /* Адаптивность для мобильных устройств */
+    @include mixins.max-width(sm) {
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Контейнер для логотипа */
+    .logo {
+        position: relative;
+        left: 2.7rem;
+    }
+
+    /* Блок действий пользователя (кнопки, уведомления, авторизация) */
+    .actions {
+        margin-right: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+}

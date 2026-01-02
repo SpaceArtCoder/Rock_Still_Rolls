@@ -1,0 +1,20 @@
+// Импорт абстракций (переменные, миксины, функции)
+@use './abstracts/variables'; // Здесь будет объявлен :root
+@use './abstracts/mixins.scss';
+@use './abstracts/functions.scss';
+
+// Импорт базовых стилей (reset, typography)
+@use './base/reset.scss';       // Стили для html, body, #root и общие сбросы
+@use './base/base.scss';        // Стили для body, html
+@use './base/typography.scss';  // Стили для h1-h6, p, a и т.д.
+
+// Импорт стилей макета (grid, общие стили для layout)
+@use './layout/app_container';
+@use './layout/flexbox.scss';
+@use './layout/grid.scss';
+
+// Импорт утилит
+@use './utilities/helpers.scss';
+@use './utilities/display.scss';
+@use './utilities/spacing.scss';
+@use './utilities/colors.scss';

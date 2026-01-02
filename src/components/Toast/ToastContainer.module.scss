@@ -1,0 +1,23 @@
+// src/components/Toast/ToastContainer.module.scss
+
+.toastContainer {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+
+  /* Адаптивность для мобильных устройств */
+  @media (max-width: 768px) {
+    left: 20px;
+    right: 20px;
+  }
+
+  /* Включаем события мыши для дочерних элементов */
+  > * {
+    pointer-events: auto;
+  }
+}

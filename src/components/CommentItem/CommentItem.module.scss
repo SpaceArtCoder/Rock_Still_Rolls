@@ -1,0 +1,176 @@
+@use "sass:color";
+// Общий контейнер для списка
+.comment_list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+// Контейнер одного комментария
+.comment_item {
+    border: 2px solid #c21113;
+    padding: 15px;
+    border-radius: 0.8rem;
+    background-color: var(--hover-link-background-color);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1rem;
+
+    // Стили для ответов (рекурсивное вложение)
+    .replies {
+        margin-top: 15px;
+        padding-left: 20px;
+        border-left: 2px solid var(--background-color);
+        
+        // Стили для вложенных элементов, чтобы они были менее выделяющимися
+        .comment_item {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: var(--hover-link-background-color);
+            box-shadow: none;
+        }
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+            border: 2px solid #c21113; /* Аватар главного автора статьи */
+        }
+
+        .info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .name {
+            font-weight: bold;
+            color: var(--background-color);
+            font-size: 1.1em;
+        }
+
+        .admin_badge {
+            background-color: #007bff;
+            color: white;
+            font-size: 0.75em;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+            font-weight: normal;
+        }
+
+        .date {
+            font-size: 0.8em;
+            color: #888;
+        }
+    }
+
+    .body {
+        p {
+            margin: 0;
+            line-height: 1.2;
+            font-size: 1.3rem;
+            color: var(--background-color);
+        }
+        
+        // Стили для формы редактирования внутри комментария
+        form {
+            textarea {
+                width: 100%;
+                padding: 8px;
+                margin-bottom: 5px;
+                border-radius: 0.8rem;
+                background-color: var(--background-color);
+            }
+            .edit_controls button {
+                margin-right: 8px;
+                padding: 5px 10px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                
+                &:first-child { // Сохранить
+                    background-color: #c21113;
+                    color: var(--color);
+                }
+                &:last-child { // Отмена
+                    background-color: #c21113;
+                    color: var(--color);
+                }
+            }
+        }
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        font-size: 0.9em;
+        background-color: var(--background-color);
+        border-radius: 1rem;
+        padding: 0 0.5rem;
+
+        button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px 0;
+            color: #aaa;
+            transition: color 0.2s;
+            
+            &:hover {
+                color: var(--hover-link-background-color);
+            }
+        }
+        
+        .like_btn {
+            color: var(--hover-link-background-color);
+            font-weight: bold;
+            &:hover {
+                color: color.adjust(#e6b52e, $lightness: -10%);
+            }
+        }
+        
+        .dislike_btn {
+            color: #c21113;
+            font-weight: bold;
+            &:hover {
+                color: color.adjust(#d9534f, $lightness: -10%);
+            }
+        }
+        
+        .delete_btn {
+            color: #aaa;
+            margin-left: auto; /* Сдвигает кнопки управления вправо */
+            
+            &:hover {
+                color: #c21113;
+            }
+        }
+
+        .edit_btn {
+            color: #aaa;
+            margin-left: auto;
+
+            &:hover {
+                color: var(--hover-link-background-color);
+            }
+        }
+    }
+    
+    .reply_form_container {
+        margin-top: 15px;
+        // Переопределяем стили формы, чтобы она выглядела как вложенная
+        .comment_form {
+            background-color: #ca2b2b;
+            padding: 10px;
+            border: 1px dashed #c80b0b;
+        }
+    }
+}

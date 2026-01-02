@@ -1,0 +1,23 @@
+.footer {
+    position: relative;
+    bottom: 0;
+    display: flex;
+    outline: 2px solid #f7d80c8f; // Рамка вокруг футера
+    border-radius: 2rem; // Закругление углов
+    margin: 2rem 0.1rem 0.1rem 0.1rem; // Внешние отступы
+    padding: 1.5rem; // Внутренние отступы
+    flex-direction: column; // Вертикальное расположение элементов
+
+    // Ссылка на политику конфиденциальности
+    .privacy_policy {
+        color: var(--color); // Цвет текста из CSS-переменной
+        font-size: 0.75rem; // Размер шрифта
+        margin: auto; // Центрирование по горизонтали
+        text-decoration: none; // Убираем подчеркивание
+
+        // Эффект при наведении
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}

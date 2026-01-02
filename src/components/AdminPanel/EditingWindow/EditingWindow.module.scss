@@ -1,0 +1,30 @@
+/* Контейнер окна редактирования */
+.edit_container {
+    z-index: 1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: auto; // Автоматический скролл, если контент длинный
+    
+    /* Сетка и выравнивание */
+    display: none;
+    flex-direction: column;
+    
+    /* Визуальные эффекты */
+    background-color: rgba(43, 40, 40, 0.795);
+    backdrop-filter: blur(20px) contrast(80%);
+    -webkit-backdrop-filter: blur(20px);
+    
+    /* Границы и тени */
+    outline: 1px solid black;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Класс-активатор (добавляется через JS) */
+.show {
+    display: flex;
+}

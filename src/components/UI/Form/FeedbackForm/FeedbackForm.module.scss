@@ -1,0 +1,77 @@
+@use '../../../../assets/styles/abstracts/mixins.scss' as mixins;
+
+/* Подключение шрифта Roboto Flex */
+@font-face {
+    font-family: "Roboto Flex";
+    src: url('../../../../assets/fonts/RobotoFlex-VariableFont_GRAD,XOPQ,XTRA,YOPQ,YTAS,YTDE,YTFI,YTLC,YTUC,opsz,slnt,wdth,wght.ttf') format('truetype');
+}
+
+/* Основной контейнер формы обратной связи */
+#feedback_form {
+    /* Заголовок формы */
+    h2 {
+        font-family: "Roboto Flex", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 600;
+        font-size: 2.3rem;
+        font-style: normal;
+        color: #f7d80c8f;
+        margin-bottom: 1.2rem;
+        
+        /* Настройки вариативного шрифта */
+        font-variation-settings:
+            "slnt" 0,
+            "wdth" 100,
+            "GRAD" 0,
+            "XOPQ" 96,
+            "XTRA" 468,
+            "YOPQ" 79,
+            "YTAS" 750,
+            "YTDE" -203,
+            "YTFI" 738,
+            "YTLC" 514,
+            "YTUC" 712;
+
+        /* Адаптивность для маленьких экранов */
+        @include mixins.max-width(sm) {
+            font-size: 2rem;
+        }
+
+        /* Адаптивность для средних и больших экранов */
+        @include mixins.width-rage(md, lgn) {
+            font-size: 1.9rem;
+        }
+    }
+
+    /* Группа полей формы */
+    .form_group {
+        font-family: "Roboto Flex", sans-serif;
+        font-weight: 600;
+
+        /* Поле для комментариев */
+        #comments {
+            width: 100%;
+            color: var(--color);
+        }
+
+        /* Метка поля */
+        label {
+            margin-right: 1rem;
+        }
+
+        /* Поле для email */
+        #email {
+            color: var(--color);
+
+            /* Адаптивность для маленьких экранов */
+            @include mixins.max-width(sm) {
+                margin-top: 1rem;
+            }
+
+            /* Адаптивность для средних и больших экранов */
+            @include mixins.width-rage(md, lgn) {
+                margin-top: 1rem;
+            }
+        }
+    }
+}

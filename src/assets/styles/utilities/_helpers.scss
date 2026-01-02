@@ -1,0 +1,74 @@
+// .visually-hidden {
+//   position: absolute !important;
+//   width: 1px; 
+//   height: 1px;
+//   padding: 0; 
+//   margin: -1px;
+//   overflow: hidden;
+//   clip: rect(0,0,0,0);
+//   border: 0;
+// }
+
+// // Скрытие элемента
+// .visually-hidden {
+//   position: absolute;
+//   width: 1px;
+//   height: 1px;
+//   margin: -1px;
+//   border: 0;
+//   padding: 0;
+//   white-space: nowrap;
+//   clip-path: inset(100%);
+//   clip: rect(0 0 0 0);
+//   overflow: hidden;
+// }
+
+// // Отступы
+// .mt-1 { margin-top: 1rem; }
+// .mt-2 { margin-top: 2rem; }
+// .mb-1 { margin-bottom: 1rem; }
+// .mb-2 { margin-bottom: 2rem; }
+// // ...и так далее для других отступов
+
+// // Выравнивание текста
+// .text-center { text-align: center; }
+// .text-right { text-align: right; }
+
+// // Отображение
+// .d-block { display: block; }
+// .d-inline-block { display: inline-block; }
+// .d-none { display: none; }
+
+// // Категория страницы
+// .container {
+//     h2 {
+//         margin-top: 1.5rem;
+//         margin-bottom: 0;
+//     }
+//     width: 100%;
+//     display: flex;
+//     flex-direction: column;
+//     background-color: var(--color-primary);
+//     div {
+//         display: flex;
+//         flex-direction: row;
+//         justify-content: center;
+//     }
+// }
+
+// // Блок навигации
+// .nav_block {
+//         display: flex;
+//         margin: 1rem;
+//         .nav_links {
+//             display: flex;
+//             margin: 0;
+//             li {
+//                 height: 4rem;
+//                 display: flex;
+//                 align-items: center;
+//             }
+            
+//         }
+        
+//     }

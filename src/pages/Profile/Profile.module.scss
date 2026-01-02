@@ -1,0 +1,450 @@
+// =============================================
+// SCSS модуль для страницы профиля пользователя
+// Все селекторы документированы с описанием их назначения и структуры
+// =============================================
+
+// Основной контейнер страницы профиля
+// Задает фон, минимальную высоту и отступы всей странице
+.profilePage {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 40px 20px;
+}
+
+// Центрирующий контейнер с ограничением максимальной ширины
+// Используется для выравнивания всего контента по центру
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+// Шапка страницы с заголовком и подзаголовком
+// Содержит основной заголовок страницы и описание
+.pageHeader {
+  margin-bottom: 40px;
+
+  // Главный заголовок страницы
+  h1 {
+    font-size: 36px;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 8px 0;
+
+    @media (max-width: 768px) {
+      font-size: 28px;
+    }
+  }
+
+  // Подзаголовок с описанием страницы
+  .subtitle {
+    font-size: 16px;
+    color: #64748b;
+    margin: 0;
+  }
+}
+
+// Основная область контента с двухколоночным макетом
+// Содержит боковую панель и основную область контента
+.content {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 30px;
+
+  @media (max-width: 968px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ===== БОКОВАЯ ПАНЕЛЬ (SIDEBAR) =====
+
+// Боковая панель с информацией о пользователе
+// Содержит аватар, основную информацию и статистику
+.sidebar {
+  @media (max-width: 968px) {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}
+
+// Карточка с аватаром пользователя
+// Содержит область для загрузки и отображения аватара
+.avatarSection {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+// Обертка для аватара для контроля размеров и позиционирования
+.avatarWrapper {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 20px;
+}
+
+// Стили для изображения аватара пользователя
+.avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #e2e8f0;
+}
+
+// Заглушка для аватара, когда изображение не загружено
+// Отображает первую букву имени пользователя на градиентном фоне
+.avatarPlaceholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  font-weight: 700;
+  border: 4px solid #e2e8f0;
+}
+
+// Кнопка для загрузки нового аватара
+.uploadButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #3b82f6;
+  color: white;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 20px;
+
+  &:hover {
+    background: #2563eb;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// Блок с основной информацией о пользователе
+// Содержит имя, email и статус администратора
+.userInfo {
+  margin-bottom: 20px;
+
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 8px 0;
+  }
+
+  .email {
+    font-size: 14px;
+    color: #64748b;
+    margin: 0 0 12px 0;
+  }
+}
+
+// Бейдж, указывающий на статус администратора
+.adminBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 12px;
+}
+
+// Блок со статистикой пользователя
+// Содержит информацию о дате регистрации и активности
+.stats {
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+// Отдельный элемент статистики с иконкой и текстом
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #64748b;
+  font-size: 14px;
+
+  svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+}
+
+// ===== ОСНОВНОЙ КОНТЕНТ (MAIN CONTENT) =====
+
+// Основная область контента справа от боковой панели
+// Содержит карточки с информацией и настройками
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// Базовая карточка для группировки контента
+// Используется для всех секций основного контента
+.card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+
+  // Модификатор для опасной зоны (удаление аккаунта)
+  &.dangerZone {
+    border: 2px solid #fee2e2;
+  }
+}
+
+// Заголовок карточки с названием секции и кнопками действий
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 30px;
+  border-bottom: 1px solid #e2e8f0;
+
+  h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+  }
+}
+
+// Основное содержимое карточки
+// Содержит формы, информацию и кнопки
+.cardContent {
+  padding: 30px;
+
+  @media (max-width: 768px) {
+    padding: 20px;
+  }
+}
+
+// Кнопка редактирования в режиме просмотра
+.editButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #475569;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+// Контейнер для кнопок в режиме редактирования
+.editActions {
+  display: flex;
+  gap: 12px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+
+    button {
+      flex: 1;
+    }
+  }
+}
+
+// Кнопка отмены редактирования
+.cancelButton {
+  padding: 8px 20px;
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    background: #f8fafc;
+    border-color: #94a3b8;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Кнопка сохранения изменений
+.saveButton {
+  padding: 8px 20px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Группа формы с меткой, полем ввода и подсказкой
+.formGroup {
+  margin-bottom: 24px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 8px;
+  }
+
+  // Статическое значение в режиме просмотра
+  .value {
+    font-size: 16px;
+    color: #1e293b;
+    margin: 0;
+  }
+
+  // Подсказка под полем ввода
+  .hint {
+    display: block;
+    font-size: 13px;
+    color: #94a3b8;
+    margin-top: 6px;
+  }
+}
+
+// Базовое поле ввода для форм
+.input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  transition: all 0.2s;
+  color: #1e293b;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  &::placeholder {
+    color: #94a3b8;
+  }
+}
+
+// Форма смены пароля
+// Отделена линией от основной информации
+.passwordForm {
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+// Вторичная кнопка для дополнительных действий
+.secondaryButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// Текст предупреждения в опасной зоне
+.dangerText {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+}
+
+// Кнопка для опасных действий (удаление аккаунта)
+.dangerButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  border: none;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}

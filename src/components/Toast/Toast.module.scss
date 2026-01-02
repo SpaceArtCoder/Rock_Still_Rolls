@@ -1,0 +1,156 @@
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  min-width: 320px;
+  max-width: 420px;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  z-index: 10000;
+  animation: slideIn 0.3s ease-out;
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  position: relative;
+
+  /* Адаптивность для мобильных устройств */
+  @media (max-width: 768px) {
+    left: 20px;
+    right: 20px;
+    min-width: auto;
+    max-width: none;
+  }
+
+  /* Анимация появления тоста */
+  @keyframes slideIn {
+    from {
+      transform: translateX(calc(100% + 20px));
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  /* Стили для типа "ошибка" */
+  &.error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+
+    .progressBar .progress {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  /* Стили для типа "успех" */
+  &.success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+
+    .progressBar .progress {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  /* Стили для типа "предупреждение" */
+  &.warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+
+    .progressBar .progress {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  /* Стили для типа "информация" */
+  &.info {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+
+    .progressBar .progress {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+/* Контейнер для иконки тоста */
+.icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* Контейнер для текстового содержимого */
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Текст сообщения тоста */
+.message {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+/* Кнопка закрытия тоста */
+.closeButton {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  color: inherit;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* Контейнер для прогресс-бара */
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+/* Анимированный прогресс-бар */
+.progress {
+  height: 100%;
+  width: 100%;
+  transform-origin: left;
+  animation: shrink linear forwards;
+
+  @keyframes shrink {
+    from {
+      transform: scaleX(1);
+    }
+    to {
+      transform: scaleX(0);
+    }
+  }
+}

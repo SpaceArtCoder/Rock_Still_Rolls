@@ -1,0 +1,137 @@
+@use "sass:color";
+
+/* Основной контейнер страницы "О проекте" */
+.container {
+  min-height: 100vh;
+  background-color: #242424;
+  color: rgba(255, 255, 255, 0.87);
+  padding: 60px 20px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+}
+
+/* Шапка страницы с заголовком */
+.header {
+  text-align: center;
+  margin-bottom: 80px;
+
+  /* Основной заголовок */
+  .title {
+    font-size: 4rem;
+    font-weight: 900;
+    letter-spacing: -2px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  /* Подзаголовок */
+  .subtitle {
+    font-size: 1.2rem;
+    color: #f7d90c;
+    font-style: italic;
+  }
+}
+
+/* Класс для выделения важного текста желтым цветом */
+.highlight {
+  color: #f7d90c;
+}
+
+/* Основное содержимое страницы */
+.content {
+  max-width: 1000px;
+  margin: 0 auto;
+
+  /* Блок с основным текстом описания */
+  .main_text {
+    text-align: center;
+    margin-bottom: 60px;
+
+    /* Заголовок раздела */
+    h2 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      border-left: 5px solid #f7d90c;
+      padding-left: 20px;
+      display: inline-block;
+    }
+
+    /* Текст описания */
+    p {
+      font-size: 1.3rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+  }
+}
+
+/* Сетка карточек с возможностями проекта */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  margin-top: 40px;
+}
+
+/* Карточка с информацией о возможностях проекта */
+.card {
+  background: color.adjust(#242424, $lightness: 5%);
+  padding: 40px;
+  border-radius: 4px;
+  border-bottom: 4px solid #242424;
+  transition: all 0.3s ease;
+  text-align: center;
+
+  /* Эффекты при наведении на карточку */
+  &:hover {
+    border-bottom-color: #f7d90c;
+    transform: translateY(-10px);
+    background: color.adjust(#242424, $lightness: 8%);
+  }
+
+  /* Иконка в карточке */
+  .card_icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+  }
+
+  /* Заголовок карточки */
+  h3 {
+    color: #f7d90c;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+  }
+}
+
+/* Футер страницы */
+.footer {
+  text-align: center;
+  margin-top: 100px;
+
+  /* Декоративный разделитель */
+  .divider {
+    width: 60px;
+    height: 4px;
+    background: #f7d90c;
+    margin: 20px auto;
+  }
+
+  /* Призыв к действию */
+  p {
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .header .title {
+    font-size: 2.5rem;
+  }
+
+  .content .main_text h2 {
+    font-size: 2rem;
+  }
+}

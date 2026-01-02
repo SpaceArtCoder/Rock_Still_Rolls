@@ -1,0 +1,65 @@
+/**
+ * ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И НАСТРОЙКИ ТЕМЫ (_variables.scss)
+ * -------------------------------------------------------
+ * Назначение: Централизованное управление дизайном приложения.
+ * Файл содержит SCSS-переменные для логики и CSS-переменные (:root) 
+ * для динамического доступа из браузера.
+ */
+
+// ==========================================
+// 1. ТИПОГРАФИКА И РЕНДЕРИНГ
+// ==========================================
+$font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+$line-height: 1.5;
+$font-weight: 400;
+$font-synthesis: none;
+$text-rendering: optimizeLegibility;
+$-webkit-font-smoothing: antialiased;
+$-moz-osx-font-smoothing: grayscale;
+
+// ==========================================
+// 2. ЦВЕТОВАЯ ПАЛИТРА
+// ==========================================
+$color-scheme: light dark;
+$font_color: rgba(255, 255, 255, 0.87);
+$background-color: #242424;
+$hover-link-background-color: #f7d90c;
+$hover-link-color: #080707;
+
+// ==========================================
+// 3. СЕТКА И АДАПТИВНОСТЬ (Breakpoints)
+// ==========================================
+// Эти значения используются функциями в _mixins.scss
+$breakpoint-sm: 428px;       // Мобильные (Landscape)
+$breakpoint-md: 760px;       // Планшеты (Portrait)
+$breakpoint-lg: 1023px;      // Малые ноутбуки
+$breakpoint-lg-next: 1024px; // Планшеты (Landscape) / Десктопы
+$breakpoint-xl: 1280px;      // Стандартные десктопы
+$breakpoint-xxl: 1400px;     // Широкоформатные мониторы
+
+// ==========================================
+// 4. ГЛОБАЛЬНЫЕ CSS-ПЕРЕМЕННЫЕ (:root)
+// ==========================================
+/**
+ * Переменные в :root позволяют изменять стили через JavaScript 
+ * и обеспечивают доступ к константам в runtime.
+ */
+:root {
+  // Шрифты
+  --font-family: #{$font-family};
+  --line-height: #{$line-height};
+  --font-weight: #{$font-weight};
+
+  // Цвета и темы
+  --color-scheme: #{$color-scheme};
+  --color: #{$font_color};
+  --background-color: #{$background-color};
+  --hover-link-background-color: #{$hover-link-background-color};
+  --hover-link-color: #{$hover-link-color};
+
+  // Настройки сглаживания и рендеринга
+  --font-synthesis: #{$font-synthesis};
+  --text-rendering: #{$text-rendering};
+  -webkit-font-smoothing: #{$-webkit-font-smoothing};
+  -moz-osx-font-smoothing: #{$-moz-osx-font-smoothing};
+}

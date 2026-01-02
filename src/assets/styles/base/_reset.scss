@@ -1,0 +1,85 @@
+/**
+ * СБРОС СТИЛЕЙ (Reset / Normalize)
+ * --------------------------------
+ * Назначение: Обеспечение одинакового отображения элементов во всех браузерах
+ * и устранение лишних стандартных отступов.
+ */
+
+// 1. Настройка бокс-модели
+// border-box гарантирует, что padding и border не увеличивают ширину элемента.
+html {
+  box-sizing: border-box;
+  -webkit-text-size-adjust: 100%; // Предотвращает изменение размера текста при повороте экрана на iOS
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+// 2. Сброс внешних и внутренних отступов для текстовых и структурных элементов
+body, 
+h1, h2, h3, h4, h5, h6, 
+p, 
+ul, ol, li, 
+figure, figcaption, 
+blockquote, 
+dl, dd {
+  margin: 0;
+  padding: 0;
+}
+
+// 3. Списки
+// Удаляем маркеры у всех списков по умолчанию
+ul, ol {
+  list-style: none;
+}
+
+// 4. Ссылки
+// Наследуем цвет текста и убираем стандартное подчеркивание (если нужно)
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+// 5. Медиа-контент
+// Делаем изображения и видео адаптивными и убираем лишние зазоры снизу
+img, 
+picture, 
+video, 
+canvas, 
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+// 6. Формы и элементы управления
+// Убираем браузерные стили для инпутов и кнопок, чтобы стилизовать их с нуля
+button, 
+input, 
+select, 
+textarea {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  appearance: none; // Убирает системный дизайн (например, у select в Safari)
+}
+
+// Делаем курсор-указатель для кнопок
+button {
+  cursor: pointer;
+}
+
+// Убираем специфические стили для Safari (input type search)
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+  display: none;
+}

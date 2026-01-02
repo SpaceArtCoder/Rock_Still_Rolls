@@ -1,0 +1,87 @@
+.service_buttons_block {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px;
+
+  // Общие стили для всех кнопок управления
+  .editButton,
+  .deleteButton,
+  .addButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+
+    svg {
+      flex-shrink: 0;
+    }
+
+    span {
+      line-height: 1;
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
+  // Кнопка Редактировать (Синяя)
+  .editButton {
+    background-color: #2563eb;
+    color: white;
+
+    &:hover {
+      background-color: #1d4ed8;
+    }
+  }
+
+  // Кнопка Удалить (Красная)
+  .deleteButton {
+    background-color: #dc2626;
+    color: white;
+
+    &:hover {
+      background-color: #b91c1c;
+    }
+  }
+
+  // Кнопка Добавить (Зеленая)
+  .addButton {
+    background-color: #16a34a;
+    color: white;
+    margin-bottom: 2rem; // Отступ снизу для верхней кнопки
+
+    &:hover {
+      background-color: #15803d;
+    }
+  }
+
+  // Внутренние стили для демо/листа (если используются в ManageContent)
+  .item {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+}
+
+// Утилитарные классы
+.shown {
+  display: none; // Скрывает кнопку, если она не должна отображаться в текущем режиме
+}
+
+.no_justify_content {
+  justify-content: flex-start; // Для кнопки "Добавить", чтобы не растягивалась
+  gap: 1rem;
+}
