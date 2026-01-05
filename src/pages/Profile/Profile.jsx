@@ -1,3 +1,4 @@
+// src/pages/Profile/Profile.jsx (ИСПРАВЛЕННЫЙ)
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../store/useAuthStore';
@@ -5,42 +6,36 @@ import { useToast } from '../../components/Toast/ToastContainer';
 import axios from 'axios';
 import styles from './Profile.module.scss';
 
-// Настройка axios для отправки cookies при запросах
 axios.defaults.withCredentials = true;
 
-/**
- * Компонент страницы профиля пользователя
- * Позволяет пользователям просматривать и редактировать свои данные,
- * менять пароль и управлять аккаунтом
- */
 const Profile = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const { user, logout } = useAuthStore();
 
-  // Состояния для управления режимами редактирования
+  // Состояния для редактирования
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Данные профиля пользователя
+  // Данные профиля
   const [profileData, setProfileData] = useState({
     name: '',
     email: '',
   });
 
-  // Данные для смены пароля
+  // Смена пароля
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
 
-  // Файл аватара и его превью
+  // Аватар
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
 
-  // Инициализация данных пользователя при загрузке компонента
+  // Инициализация данных
   useEffect(() => {
     if (user) {
       setProfileData({
@@ -48,21 +43,16 @@ const Profile = () => {
         email: user.email || '',
       });
       
-      // Установка превью аватара если есть URL
       if (user.avatarUrl) {
         setAvatarPreview(`http://localhost:5000${user.avatarUrl}`);
       }
     }
   }, [user]);
 
-  /**
-   * Обработчик изменения файла аватара
-   * @param {Event} e - Событие выбора файла
-   */
+  // Обработка изменения аватара
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Проверка размера файла (максимум 2MB)
       if (file.size > 2 * 1024 * 1024) {
         toast.error('Файл слишком большой. Максимум 2MB');
         return;
@@ -70,7 +60,7 @@ const Profile = () => {
 
       setAvatarFile(file);
       
-      // Создание превью изображения
+      // Создаем превью
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatarPreview(reader.result);
@@ -79,11 +69,8 @@ const Profile = () => {
     }
   };
 
-  /**
-   * Сохранение изменений профиля пользователя
-   */
+  // Сохранение профиля
   const handleSaveProfile = async () => {
-    // Валидация имени
     if (!profileData.name.trim()) {
       toast.error('Имя не может быть пустым');
       return;
@@ -92,7 +79,6 @@ const Profile = () => {
     setIsSaving(true);
 
     try {
-      // Создание FormData для отправки файлов
       const formData = new FormData();
       formData.append('name', profileData.name);
       formData.append('email', profileData.email);
@@ -112,10 +98,10 @@ const Profile = () => {
       );
 
       if (response.data.user) {
-        // Обновление данных пользователя в хранилище
+        // Обновляем пользователя в store
         useAuthStore.getState().setUser(response.data.user);
         
-        // Обновление превью аватара из обновленного пользователя
+        // ИСПРАВЛЕНО: Обновляем превью аватара из нового user
         if (response.data.user.avatarUrl) {
           setAvatarPreview(`http://localhost:5000${response.data.user.avatarUrl}`);
         }
@@ -132,11 +118,8 @@ const Profile = () => {
     }
   };
 
-  /**
-   * Смена пароля пользователя
-   */
+  // Смена пароля
   const handleChangePassword = async () => {
-    // Валидация ввода пароля
     if (!passwordData.currentPassword) {
       toast.error('Введите текущий пароль');
       return;
@@ -178,11 +161,8 @@ const Profile = () => {
     }
   };
 
-  /**
-   * Удаление аккаунта пользователя
-   */
+  // Удаление аккаунта
   const handleDeleteAccount = async () => {
-    // Двойное подтверждение для защиты от случайного удаления
     if (!window.confirm(
       'Вы уверены, что хотите удалить свой аккаунт? Это действие необратимо!'
     )) {
@@ -200,7 +180,7 @@ const Profile = () => {
       
       toast.success('Аккаунт успешно удален');
       
-      // Выход из системы и перенаправление на главную страницу
+      // Выходим и перенаправляем
       await logout();
       navigate('/');
     } catch (error) {
@@ -209,7 +189,6 @@ const Profile = () => {
     }
   };
 
-  // Если пользователь не авторизован - не рендерим компонент
   if (!user) {
     return null;
   }
@@ -217,14 +196,14 @@ const Profile = () => {
   return (
     <div className={styles.profilePage}>
       <div className={styles.container}>
-        {/* Заголовок страницы профиля */}
+        {/* Заголовок */}
         <div className={styles.pageHeader}>
           <h1>Личный кабинет</h1>
           <p className={styles.subtitle}>Управляйте своим профилем и настройками</p>
         </div>
 
         <div className={styles.content}>
-          {/* Левая колонка: Аватар и основная информация */}
+          {/* Левая колонка - Аватар и основная информация */}
           <div className={styles.sidebar}>
             <div className={styles.avatarSection}>
               <div className={styles.avatarWrapper}>
@@ -237,7 +216,6 @@ const Profile = () => {
                 )}
               </div>
 
-              {/* Кнопка загрузки нового аватара в режиме редактирования */}
               {isEditing && (
                 <label className={styles.uploadButton}>
                   <input
@@ -254,7 +232,6 @@ const Profile = () => {
                 </label>
               )}
 
-              {/* Информация о пользователе */}
               <div className={styles.userInfo}>
                 <h2>{user.name}</h2>
                 <p className={styles.email}>{user.email}</p>
@@ -262,12 +239,14 @@ const Profile = () => {
                   <span className={styles.adminBadge}>Администратор</span>
                 )}
               </div>
+
+              {/* ИСПРАВЛЕНО: Убрана секция со статистикой (createdAt) */}
             </div>
           </div>
 
-          {/* Правая колонка: Формы редактирования профиля */}
+          {/* Правая колонка - Формы редактирования */}
           <div className={styles.mainContent}>
-            {/* Карточка основной информации */}
+            {/* Основная информация */}
             <div className={styles.card}>
               <div className={styles.cardHeader}>
                 <h3>Основная информация</h3>
@@ -337,7 +316,7 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* Карточка безопасности */}
+            {/* Безопасность */}
             <div className={styles.card}>
               <div className={styles.cardHeader}>
                 <h3>Безопасность</h3>
@@ -417,7 +396,7 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* Карточка "Опасная зона" для удаления аккаунта */}
+            {/* Опасная зона */}
             <div className={`${styles.card} ${styles.dangerZone}`}>
               <div className={styles.cardHeader}>
                 <h3>Опасная зона</h3>

@@ -1,3 +1,4 @@
+// src/pages/PrivacyPolicy/PrivacyPolicy.jsx
 import { useEffect } from 'react';
 import styles from './PrivacyPolicy.module.scss';
 

@@ -1,29 +1,19 @@
-// =============================================
-// SCSS модуль для страницы профиля пользователя
-// Все селекторы документированы с описанием их назначения и структуры
-// =============================================
+// src/pages/Profile/Profile.module.scss
 
-// Основной контейнер страницы профиля
-// Задает фон, минимальную высоту и отступы всей странице
 .profilePage {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   padding: 40px 20px;
 }
 
-// Центрирующий контейнер с ограничением максимальной ширины
-// Используется для выравнивания всего контента по центру
 .container {
   max-width: 1200px;
   margin: 0 auto;
 }
 
-// Шапка страницы с заголовком и подзаголовком
-// Содержит основной заголовок страницы и описание
 .pageHeader {
   margin-bottom: 40px;
 
-  // Главный заголовок страницы
   h1 {
     font-size: 36px;
     font-weight: 800;
@@ -35,7 +25,6 @@
     }
   }
 
-  // Подзаголовок с описанием страницы
   .subtitle {
     font-size: 16px;
     color: #64748b;
@@ -43,8 +32,6 @@
   }
 }
 
-// Основная область контента с двухколоночным макетом
-// Содержит боковую панель и основную область контента
 .content {
   display: grid;
   grid-template-columns: 320px 1fr;
@@ -55,10 +42,8 @@
   }
 }
 
-// ===== БОКОВАЯ ПАНЕЛЬ (SIDEBAR) =====
+// ===== SIDEBAR =====
 
-// Боковая панель с информацией о пользователе
-// Содержит аватар, основную информацию и статистику
 .sidebar {
   @media (max-width: 968px) {
     max-width: 400px;
@@ -66,8 +51,6 @@
   }
 }
 
-// Карточка с аватаром пользователя
-// Содержит область для загрузки и отображения аватара
 .avatarSection {
   background: white;
   border-radius: 16px;
@@ -76,7 +59,6 @@
   text-align: center;
 }
 
-// Обертка для аватара для контроля размеров и позиционирования
 .avatarWrapper {
   position: relative;
   width: 150px;
@@ -84,7 +66,6 @@
   margin: 0 auto 20px;
 }
 
-// Стили для изображения аватара пользователя
 .avatar {
   width: 100%;
   height: 100%;
@@ -93,8 +74,6 @@
   border: 4px solid #e2e8f0;
 }
 
-// Заглушка для аватара, когда изображение не загружено
-// Отображает первую букву имени пользователя на градиентном фоне
 .avatarPlaceholder {
   width: 100%;
   height: 100%;
@@ -109,7 +88,6 @@
   border: 4px solid #e2e8f0;
 }
 
-// Кнопка для загрузки нового аватара
 .uploadButton {
   display: inline-flex;
   align-items: center;
@@ -134,8 +112,6 @@
   }
 }
 
-// Блок с основной информацией о пользователе
-// Содержит имя, email и статус администратора
 .userInfo {
   margin-bottom: 20px;
 
@@ -153,7 +129,6 @@
   }
 }
 
-// Бейдж, указывающий на статус администратора
 .adminBadge {
   display: inline-block;
   padding: 4px 12px;
@@ -164,14 +139,11 @@
   border-radius: 12px;
 }
 
-// Блок со статистикой пользователя
-// Содержит информацию о дате регистрации и активности
 .stats {
   padding-top: 20px;
   border-top: 1px solid #e2e8f0;
 }
 
-// Отдельный элемент статистики с иконкой и текстом
 .stat {
   display: flex;
   align-items: center;
@@ -186,31 +158,25 @@
   }
 }
 
-// ===== ОСНОВНОЙ КОНТЕНТ (MAIN CONTENT) =====
+// ===== MAIN CONTENT =====
 
-// Основная область контента справа от боковой панели
-// Содержит карточки с информацией и настройками
 .mainContent {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-// Базовая карточка для группировки контента
-// Используется для всех секций основного контента
 .card {
   background: white;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 
-  // Модификатор для опасной зоны (удаление аккаунта)
   &.dangerZone {
     border: 2px solid #fee2e2;
   }
 }
 
-// Заголовок карточки с названием секции и кнопками действий
 .cardHeader {
   display: flex;
   justify-content: space-between;
@@ -233,8 +199,6 @@
   }
 }
 
-// Основное содержимое карточки
-// Содержит формы, информацию и кнопки
 .cardContent {
   padding: 30px;
 
@@ -243,7 +207,6 @@
   }
 }
 
-// Кнопка редактирования в режиме просмотра
 .editButton {
   display: flex;
   align-items: center;
@@ -270,7 +233,6 @@
   }
 }
 
-// Контейнер для кнопок в режиме редактирования
 .editActions {
   display: flex;
   gap: 12px;
@@ -284,7 +246,6 @@
   }
 }
 
-// Кнопка отмены редактирования
 .cancelButton {
   padding: 8px 20px;
   background: transparent;
@@ -307,7 +268,6 @@
   }
 }
 
-// Кнопка сохранения изменений
 .saveButton {
   padding: 8px 20px;
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
@@ -329,7 +289,6 @@
   }
 }
 
-// Группа формы с меткой, полем ввода и подсказкой
 .formGroup {
   margin-bottom: 24px;
 
@@ -345,14 +304,12 @@
     margin-bottom: 8px;
   }
 
-  // Статическое значение в режиме просмотра
   .value {
     font-size: 16px;
     color: #1e293b;
     margin: 0;
   }
 
-  // Подсказка под полем ввода
   .hint {
     display: block;
     font-size: 13px;
@@ -361,7 +318,6 @@
   }
 }
 
-// Базовое поле ввода для форм
 .input {
   width: 100%;
   padding: 12px 16px;
@@ -382,14 +338,11 @@
   }
 }
 
-// Форма смены пароля
-// Отделена линией от основной информации
 .passwordForm {
   padding-top: 20px;
   border-top: 1px solid #e2e8f0;
 }
 
-// Вторичная кнопка для дополнительных действий
 .secondaryButton {
   display: flex;
   align-items: center;
@@ -415,7 +368,6 @@
   }
 }
 
-// Текст предупреждения в опасной зоне
 .dangerText {
   font-size: 14px;
   color: #64748b;
@@ -423,7 +375,6 @@
   margin: 0 0 20px 0;
 }
 
-// Кнопка для опасных действий (удаление аккаунта)
 .dangerButton {
   display: flex;
   align-items: center;

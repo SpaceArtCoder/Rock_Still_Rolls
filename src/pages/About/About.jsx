@@ -2,13 +2,13 @@ import React from 'react';
 import styles from './About.module.scss';
 
 /**
- * Компонент страницы "О проекте"
- * Отображает информацию о проекте Rock Still Rolls, его миссии и возможностях
+ * Страница "О проекте" для музыкального веб-приложения
+ * Описывает цели, ценности и функциональность платформы для любителей рок-музыки
  */
 const AboutPage = () => {
     return (
         <div className={styles.container}>
-            {/* Заголовок страницы */}
+            {/* Хедер страницы с основным заголовком и слоганом */}
             <header className={styles.header}>
                 <h1 className={styles.title}>
                     ROCK STILL <span className={styles.highlight}>ROLLS</span>
@@ -18,9 +18,9 @@ const AboutPage = () => {
                 </p>
             </header>
 
-            {/* Основное содержимое страницы */}
+            {/* Основной контент страницы */}
             <section className={styles.content}>
-                {/* Описание проекта */}
+                {/* Блок с описанием проекта */}
                 <div className={styles.main_text}>
                     <h2>О проекте</h2>
                     <p>
@@ -30,19 +30,19 @@ const AboutPage = () => {
                     </p>
                 </div>
 
-                {/* Карточки с ключевыми особенностями проекта */}
+                {/* Сетка карточек с ключевыми функциями платформы */}
                 <div className={styles.grid}>
-                    {/* Карточка "Обзоры" */}
+                    {/* Карточка 1: Обзоры музыкального контента */}
                     <div className={styles.card}>
                         <div className={styles.card_icon}>🎸</div>
                         <h3>Обзоры</h3>
                         <p>
-                            Глубокий анализ альбомов, интервью с группами 
-                            и отчеты с самых жарких концертов.
+                            Глубокий анализ альбомов, интервью с группами и отчеты 
+                            с самых жарких концертов.
                         </p>
                     </div>
-                    
-                    {/* Карточка "Комьюнити" */}
+
+                    {/* Карточка 2: Сообщество пользователей */}
                     <div className={styles.card}>
                         <div className={styles.card_icon}>⚡</div>
                         <h3>Комьюнити</h3>
@@ -51,8 +51,8 @@ const AboutPage = () => {
                             влиять на контент через голосование.
                         </p>
                     </div>
-                    
-                    {/* Карточка "Драйв" */}
+
+                    {/* Карточка 3: Культура и философия рока */}
                     <div className={styles.card}>
                         <div className={styles.card_icon}>🔥</div>
                         <h3>Драйв</h3>
@@ -64,7 +64,7 @@ const AboutPage = () => {
                 </div>
             </section>
 
-            {/* Футер страницы */}
+            {/* Футер страницы с призывом к действию */}
             <footer className={styles.footer}>
                 <p>Присоединяйся к нам. Громкость на максимум.</p>
                 <div className={styles.divider}></div>

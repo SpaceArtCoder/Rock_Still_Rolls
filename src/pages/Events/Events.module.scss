@@ -1,18 +1,77 @@
+//@use '../../assets/styles/abstracts/mixins' as mixins;
+//
+//.events_page {
+//    width: 100%;
+//    display: flex;
+//    .events_page_block {
+//        display: grid;
+//        gap: 1.8rem;
+//        margin: auto;
+//        width: 40%;
+//        .events_block {
+//            display: flex;
+//            flex-direction: column;
+//            width: 100%;
+//            height: 30rem;
+//            outline: 3px solid #f7d80c8f;
+//            border-radius: 0.8rem;
+//            a {
+//                img {
+//                    width: 100%;
+//                    height: 20rem;
+//                    border-radius: 0.8rem 0.8rem 0 0;
+//                    @include mixins.width-rage(xl, xxl) {
+//                        height: 18rem;
+//                    }
+//                }
+//                h2 {
+//                    color: var(--color);
+//                    padding: 1rem 0.5rem;
+//                    font-size: 1.1rem;
+//                }
+//            }
+//            p {
+//                color: var(--color);
+//                margin-bottom: 0;
+//                padding: 0.5rem;
+//                font-size: 1rem;
+//                background-color: #494949f5;
+//                border-radius: 0;
+//                scrollbar-color: #494949f5 #494949f5;
+//                scrollbar-width: thin;
+//                height: 100%;
+//
+//                @include mixins.max-width(sm) {
+//                    overflow: scroll;
+//                }
+//                @include mixins.width-rage(md, lg) {
+//                    overflow:scroll;
+//                }
+//                @include mixins.width-rage(lgn, lgn) {
+//                    overflow:scroll;
+//                }
+//                @include mixins.width-rage(xl, xxl) {
+//                    overflow:scroll;
+//                }
+//                @include mixins.min-width(xxl) {
+//                    overflow: scroll;
+//                }
+//            }
+//        }
+//    }
+//}
+
+// src/pages/Events/Events.module.scss (С INFINITE SCROLL)
 @use '../../assets/styles/abstracts/mixins' as mixins;
 
-/* Основной контейнер страницы событий */
 .events_page {
     width: 100%;
     display: flex;
-    
-    /* Блок содержащий все события */
     .events_page_block {
         display: grid;
         gap: 1.8rem;
         margin: auto;
         width: 40%;
-        
-        /* Отдельный блок события */
         .events_block {
             display: flex;
             flex-direction: column;
@@ -20,28 +79,21 @@
             height: 30rem;
             outline: 3px solid #f7d80c8f;
             border-radius: 0.8rem;
-            
-            /* Ссылка с изображением и заголовком */
             a {
                 img {
                     width: 100%;
                     height: 20rem;
                     border-radius: 0.8rem 0.8rem 0 0;
-                    
-                    /* Адаптивность для больших экранов */
                     @include mixins.width-rage(xl, xxl) {
                         height: 18rem;
                     }
                 }
-                
                 h2 {
                     color: var(--color);
                     padding: 1rem 0.5rem;
                     font-size: 1.1rem;
                 }
             }
-            
-            /* Текст описания события */
             p {
                 color: var(--color);
                 margin-bottom: 0;
@@ -53,18 +105,17 @@
                 scrollbar-width: thin;
                 height: 100%;
 
-                /* Адаптивность для прокрутки на разных устройствах */
                 @include mixins.max-width(sm) {
                     overflow: scroll;
                 }
                 @include mixins.width-rage(md, lg) {
-                    overflow: scroll;
+                    overflow:scroll;
                 }
                 @include mixins.width-rage(lgn, lgn) {
-                    overflow: scroll;
+                    overflow:scroll;
                 }
                 @include mixins.width-rage(xl, xxl) {
-                    overflow: scroll;
+                    overflow:scroll;
                 }
                 @include mixins.min-width(xxl) {
                     overflow: scroll;
@@ -75,10 +126,10 @@
 }
 
 /* ============================================
-   СТИЛИ ДЛЯ БЕСКОНЕЧНОЙ ПРОКРУТКИ
+   INFINITE SCROLL СТИЛИ
    ============================================ */
 
-/* Индикатор начальной загрузки */
+/* Начальный loader */
 .loader {
     display: flex;
     flex-direction: column;
@@ -95,7 +146,7 @@
     }
 }
 
-/* Индикатор загрузки дополнительных элементов */
+/* Загрузка следующих элементов */
 .loadingMore {
     display: flex;
     flex-direction: column;
@@ -114,7 +165,7 @@
     }
 }
 
-/* Анимация спиннера загрузки */
+/* Спиннер */
 .spinner {
     width: 50px;
     height: 50px;
@@ -124,14 +175,13 @@
     animation: spin 1s linear infinite;
 }
 
-/* Анимация вращения спиннера */
 @keyframes spin {
     to {
         transform: rotate(360deg);
     }
 }
 
-/* Сообщение о достижении конца списка */
+/* Сообщение о конце списка */
 .endMessage {
     padding: 2rem;
     text-align: center;
@@ -149,7 +199,7 @@
     }
 }
 
-/* Стиль для пустого списка событий */
+/* Пустое состояние */
 .emptyState {
     padding: 4rem 2rem;
     text-align: center;
@@ -164,7 +214,7 @@
     }
 }
 
-/* Стиль для отображения ошибок */
+/* Ошибка */
 .error {
     padding: 2rem;
     text-align: center;
@@ -182,7 +232,7 @@
     }
 }
 
-/* Адаптивность для средних и мобильных устройств */
+/* Responsive */
 @include mixins.max-width(md) {
     .events_page {
         .events_page_block {

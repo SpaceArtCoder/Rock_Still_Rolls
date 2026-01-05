@@ -1,129 +1,163 @@
-/**
- * КОРНЕВОЙ КОМПОНЕНТ ПРИЛОЖЕНИЯ (App.jsx)
- * --------------------------------------
- * Назначение: 
- * - Настройка маршрутизации (React Router).
- * - Управление глобальным состоянием сессии (Zustand).
- * - Обработка результатов OAuth-авторизации.
- * - Синхронизация состояния между вкладками браузера.
- */
-
-import { useEffect } from 'react';
+import { useEffect, Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header/Header.jsx';
-import MainContent from './pages/MainContent/MainContent.jsx';
-import News from './pages/News/News.jsx';
-import Performers from './pages/Permormers/Performers.jsx';
-import Events from './pages/Events/Events.jsx';
-import About from './pages/About/About.jsx';
 import Footer from './components/Footer/Footer.jsx';
-import ManageContent from './components/AdminPanel/ManageContent/ManageContent.jsx';
-import ArticlePage from './components/UI/ArticlePage/ArticlePage.jsx';
 import AdminRoute from './components/AdminRoute/AdminRoute.jsx';
-import PrivacyPolicy from './pages/PrivacyPolicy/PrivacyPolicy.jsx';
 import { ToastProvider, useToast } from './components/Toast/ToastContainer';
 import CookieConsent from './components/CookieConsent/CookieConsent';
 import useAuthStore from './store/useAuthStore';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute.jsx';
+import LoadingSpinner from './components/LoadingSpinner/LoadingSpinner.jsx';
 import './assets/styles/main.scss';
-import Profile from './pages/Profile/Profile.jsx';
+
+// Lazy loading для страниц - загрузка компонентов только при необходимости
+const MainContent = lazy(() => import('./pages/MainContent/MainContent.jsx'));
+const News = lazy(() => import('./pages/News/News.jsx'));
+const Performers = lazy(() => import('./pages/Performers/Performers.jsx'));
+const Events = lazy(() => import('./pages/Events/Events.jsx'));
+const About = lazy(() => import('./pages/About/About.jsx'));
+const Profile = lazy(() => import('./pages/Profile/Profile.jsx'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy/PrivacyPolicy.jsx'));
+const ManageContent = lazy(() => import('./components/AdminPanel/ManageContent/ManageContent.jsx'));
+const ArticlePage = lazy(() => import('./components/UI/ArticlePage/ArticlePage.jsx'));
 
 /**
- * КОМПОНЕНТ: OAuthHandler
- * -----------------------
- * Назначение: Перехват параметров из URL после редиректа от Google/GitHub.
- * Если в URL есть ?auth=success, обновляет данные пользователя в приложении.
+ * Компонент-обработчик OAuth авторизации
+ * Обрабатывает редиректы от OAuth провайдеров (GitHub, Google и т.д.)
+ * Парсит URL параметры для определения статуса аутентификации
  */
-
 function OAuthHandler() {
     const fetchUser = useAuthStore(state => state.fetchUser);
     const toast = useToast();
 
     useEffect(() => {
+        // Парсинг URL параметров для обработки OAuth редиректов
         const params = new URLSearchParams(window.location.search);
         const authStatus = params.get('auth');
         const error = params.get('error');
 
+        // Обработка успешной аутентификации
         if (authStatus === 'success') {
-            fetchUser(); // Запрашиваем данные профиля у сервера
-            toast('Вы успешно вошли через соцсети!', 'success');
-            // Очищаем URL от сервисных параметров
+            toast.success('Вход выполнен успешно!');
+            fetchUser(); // Загрузка данных пользователя после успешного входа
+            // Очистка URL от параметров авторизации
             window.history.replaceState({}, document.title, window.location.pathname);
-        } else if (error) {
-            toast('Ошибка при входе через соцсети', 'error');
+        }
+
+        // Обработка ошибок аутентификации
+        if (error) {
+            let errorMessage = 'Ошибка входа';
+
+            // Определение типа ошибки для пользовательского сообщения
+            if (error === 'oauth_failed') {
+                errorMessage = 'Не удалось войти через социальную сеть';
+            } else if (error === 'no_email') {
+                errorMessage = 'Не удалось получить email из GitHub';
+            }
+
+            toast.error(errorMessage);
+            // Очистка URL от параметров ошибок
+            window.history.replaceState({}, document.title, window.location.pathname);
         }
     }, [fetchUser, toast]);
 
-    return null; // Компонент ничего не рендерит, только выполняет логику
+    return null; // Компонент не рендерит UI, только обрабатывает логику
 }
 
+/**
+ * Главный компонент приложения App
+ * Содержит:
+ * - Маршрутизацию между страницами
+ * - Инициализацию аутентификации
+ * - Глобальные провайдеры (Toast, Cookie Consent)
+ * - Основную структуру приложения (Header, Main, Footer)
+ */
 function App() {
-  const { fetchUser, logout } = useAuthStore();
+    // Получение методов из хранилища аутентификации
+    const fetchUser = useAuthStore(state => state.fetchUser);
+    const initAuthSync = useAuthStore(state => state.initAuthSync); // Синхронизация между вкладками
 
-  /**
-   * ЭФФЕКТ: Инициализация и Синхронизация
-   * 1. При загрузке проверяет сессию пользователя.
-   * 2. Слушает событие 'storage', чтобы мгновенно разлогинить юзера 
-   * во всех вкладках, если он вышел в одной из них.
-   */
-  useEffect(() => {
-    fetchUser(); // Проверка Cookie при старте
+    useEffect(() => {
+        // Инициализация приложения при монтировании
+        fetchUser(); // Загрузка данных текущего пользователя
+        const cleanup = initAuthSync(); // Инициализация синхронизации между вкладками
 
-    const handleStorageChange = (e) => {
-      if (e.key === 'auth-storage' && !e.newValue) {
-        logout(); // Синхронный выход
-      }
-    };
+        // Функция очистки при размонтировании компонента
+        return () => {
+            if (cleanup) cleanup();
+        };
+    }, [fetchUser, initAuthSync]);
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [fetchUser, logout]);
+    return (
+        // Глобальный провайдер для уведомлений (Toast)
+        <ToastProvider>
+            {/* Обработчик OAuth редиректов */}
+            <OAuthHandler />
+            
+            {/* Основной контейнер приложения */}
+            <div className="App">
+                {/* Шапка приложения (навигация, поиск, авторизация) */}
+                <Header />
+                
+                {/* Основное содержимое страницы */}
+                <main className="main-content-block">
+                    {/* Suspense для ленивой загрузки страниц с индикатором загрузки */}
+                    <Suspense fallback={<LoadingSpinner />}>
+                        {/* Маршрутизация приложения */}
+                        <Routes>
+                            {/* Публичные маршруты */}
+                            <Route path="/" element={<MainContent />} />
+                            <Route path="/news" element={<News />} />
+                            <Route path="/news/:slug" element={<ArticlePage />} />
+                            <Route path="/performers" element={<Performers />} />
+                            <Route path="/performers/:slug" element={<ArticlePage />} />
+                            <Route path="/events" element={<Events />} />
+                            <Route path="/events/:slug" element={<ArticlePage />} />
+                            <Route path="/about" element={<About />} />
+                            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
-  return (
-      <ToastProvider>
-        <div className="app-container">
-          <Header />
-          <OAuthHandler /> {/* Слушатель OAuth событий */}
+                            {/* Маршрут 404 - страница не найдена */}
+                            <Route path="*" element={<h2>404 - Страница не найдена</h2>} />
 
-          <main className="main-content">
-            <Routes>
-              {/* --- ПУБЛИЧНЫЕ МАРШРУТЫ --- */}
-              <Route path="/" element={<MainContent />} />
-              <Route path="/news" element={<News />} />
-              <Route path="/news/:slug" element={<ArticlePage />} />
-              <Route path="/about" element={<About />} />
+                            {/* Защищенные маршруты (только для авторизованных пользователей) */}
+                            <Route
+                                path="/profile"
+                                element={
+                                    <ProtectedRoute>
+                                        <Profile />
+                                    </ProtectedRoute>
+                                }
+                            />
 
-              {/* --- ПРИВАТНЫЕ МАРШРУТЫ (Для залогиненных) --- */}
-              <Route
-                  path="/profile"
-                  element={
-                    <ProtectedRoute>
-                      <Profile />
-                    </ProtectedRoute>
-                  }
-              />
+                            {/* Административные маршруты (только для администраторов) */}
+                            <Route
+                                path="/manage"
+                                element={
+                                    <AdminRoute>
+                                        <ManageContent />
+                                    </AdminRoute>
+                                }
+                            />
+                            <Route
+                                path="/manage/:slug"
+                                element={
+                                    <AdminRoute>
+                                        <ArticlePage />
+                                    </AdminRoute>
+                                }
+                            />
+                        </Routes>
+                    </Suspense>
+                </main>
 
-              {/* --- АДМИН ПАНЕЛЬ (Только для isAdmin) --- */}
-              
-              <Route
-                  path="/manage"
-                  element={
-                    <AdminRoute>
-                      <ManageContent />
-                    </AdminRoute>
-                  }
-              />
-              
-              {/* Обработка несуществующих страниц */}
-              <Route path="*" element={<h2>404 - Страница не найдена</h2>} />
-            </Routes>
-          </main>
-
-          <Footer />
-          <CookieConsent /> {/* Уведомление об использовании Cookie */}
-        </div>
-      </ToastProvider>
-  );
+                {/* Подвал приложения */}
+                <Footer />
+                
+                {/* Компонент согласия на использование cookies */}
+                <CookieConsent />
+            </div>
+        </ToastProvider>
+    );
 }
 
 export default App;

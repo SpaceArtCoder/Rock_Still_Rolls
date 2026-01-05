@@ -1,6 +1,5 @@
 @use "sass:color";
 
-/* Основной контейнер страницы "О проекте" */
 .container {
   min-height: 100vh;
   background-color: #242424;
@@ -10,12 +9,10 @@
   line-height: 1.6;
 }
 
-/* Шапка страницы с заголовком */
 .header {
   text-align: center;
   margin-bottom: 80px;
 
-  /* Основной заголовок */
   .title {
     font-size: 4rem;
     font-weight: 900;
@@ -24,7 +21,6 @@
     text-transform: uppercase;
   }
 
-  /* Подзаголовок */
   .subtitle {
     font-size: 1.2rem;
     color: #f7d90c;
@@ -32,22 +28,18 @@
   }
 }
 
-/* Класс для выделения важного текста желтым цветом */
 .highlight {
   color: #f7d90c;
 }
 
-/* Основное содержимое страницы */
 .content {
   max-width: 1000px;
   margin: 0 auto;
 
-  /* Блок с основным текстом описания */
   .main_text {
     text-align: center;
     margin-bottom: 60px;
 
-    /* Заголовок раздела */
     h2 {
       font-size: 2.5rem;
       margin-bottom: 20px;
@@ -56,7 +48,6 @@
       display: inline-block;
     }
 
-    /* Текст описания */
     p {
       font-size: 1.3rem;
       max-width: 800px;
@@ -65,7 +56,6 @@
   }
 }
 
-/* Сетка карточек с возможностями проекта */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -73,7 +63,6 @@
   margin-top: 40px;
 }
 
-/* Карточка с информацией о возможностях проекта */
 .card {
   background: color.adjust(#242424, $lightness: 5%);
   padding: 40px;
@@ -82,20 +71,17 @@
   transition: all 0.3s ease;
   text-align: center;
 
-  /* Эффекты при наведении на карточку */
   &:hover {
     border-bottom-color: #f7d90c;
     transform: translateY(-10px);
     background: color.adjust(#242424, $lightness: 8%);
   }
 
-  /* Иконка в карточке */
   .card_icon {
     font-size: 3rem;
     margin-bottom: 20px;
   }
 
-  /* Заголовок карточки */
   h3 {
     color: #f7d90c;
     font-size: 1.5rem;
@@ -104,12 +90,10 @@
   }
 }
 
-/* Футер страницы */
 .footer {
   text-align: center;
   margin-top: 100px;
 
-  /* Декоративный разделитель */
   .divider {
     width: 60px;
     height: 4px;
@@ -117,7 +101,6 @@
     margin: 20px auto;
   }
 
-  /* Призыв к действию */
   p {
     font-weight: bold;
     letter-spacing: 2px;
@@ -125,7 +108,6 @@
   }
 }
 
-/* Адаптивность для мобильных устройств */
 @media (max-width: 768px) {
   .header .title {
     font-size: 2.5rem;
