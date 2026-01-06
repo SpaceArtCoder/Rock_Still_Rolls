@@ -5,11 +5,9 @@ import { Link } from 'react-router-dom';
 import styles from './IOSThreeStateToggle.module.scss';
 
 const IOSThreeStateToggle = ({ onStateChange }) => {
-  // ИСПРАВЛЕНО: Читаем из Zustand правильно
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const user = useAuthStore(state => state.user);
   const isLoading = useAuthStore(state => state.isLoading);
-  // const fetchUser = useAuthStore(state => state.fetchUser);
   const logout = useAuthStore(state => state.logout);
 
   const [activeState, setActiveState] = useState('login');
@@ -18,14 +16,6 @@ const IOSThreeStateToggle = ({ onStateChange }) => {
   const [registrationSuccessName, setRegistrationSuccessName] = useState(null);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const containerRef = useRef(null);
-
-
-  // УДАЛЕНО: Этот useEffect больше не нужен, так как fetchUser вызывается в App.jsx
-  // useEffect(() => {
-  //   if (isAuthenticated && !user) {
-  //       fetchUser();
-  //   }
-  // }, [isAuthenticated, user, fetchUser]);
 
 
   const handleStateChange = (state) => {
@@ -74,8 +64,7 @@ const IOSThreeStateToggle = ({ onStateChange }) => {
 
   // ИСПРАВЛЕННАЯ функция успешного входа (теперь не принимает token)
   const handleAuthSuccess = () => {
-      // УДАЛЕНО: login(token, userData) - теперь вход обрабатывается внутри AuthModal
-      // Cookie уже установлен, данные пользователя уже в store
+     
       
       setIsOpen(false); // Закрываем модалку
       setRegistrationSuccessName(null); // Сбрасываем уведомление
@@ -103,7 +92,7 @@ const IOSThreeStateToggle = ({ onStateChange }) => {
           {/* Аватарка или иконка по умолчанию */}
           {user?.avatarUrl ? (
             <img 
-                src={`http://localhost:5000${user.avatarUrl}`} // ИСПРАВЛЕНО: добавлен полный URL
+                src={`https://uncramped-robbin-patrimonial.ngrok-free.dev${user.avatarUrl}`} // ИСПРАВЛЕНО: добавлен полный URL
                 alt={user.name || 'User'} 
                 className={styles.avatar} 
             />

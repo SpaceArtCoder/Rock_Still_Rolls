@@ -199,7 +199,7 @@ const NotificationBell = () => {
                     <div className={styles.iconWrapper}>
                       {notification.fromUser?.avatarUrl ? (
                         <img
-                          src={`http://localhost:5000${notification.fromUser.avatarUrl}`}
+                          src={`https://uncramped-robbin-patrimonial.ngrok-free.dev${notification.fromUser.avatarUrl}`}
                           alt={notification.fromUser.name}
                           className={styles.avatar}
                         />

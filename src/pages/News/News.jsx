@@ -12,7 +12,7 @@ function News() {
         error,
         hasMore,
         lastElementRef
-    } = useInfiniteScroll('http://localhost:5000/api/articles/paginated', {
+    } = useInfiniteScroll('https://uncramped-robbin-patrimonial.ngrok-free.dev/api/articles/paginated', {
         category: 'Новости',
         limit: 10
     });

@@ -60,7 +60,7 @@ const CommentItem = ({ comment, articleSlug }) => {
             <div className={styles.header}>
                 {comment.author.avatarUrl && (
                     <img 
-                        src={`http://localhost:5000${comment.author.avatarUrl}`} 
+                        src={`https://uncramped-robbin-patrimonial.ngrok-free.dev${comment.author.avatarUrl}`} 
                         alt={comment.author.name} 
                         className={styles.avatar} 
                     />

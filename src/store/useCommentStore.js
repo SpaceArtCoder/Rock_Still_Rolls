@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import axios from '../utils/axiosConfig';
 
-const API_BASE_URL = 'http://localhost:5000/api/comments';
+const API_BASE_URL = 'https://uncramped-robbin-patrimonial.ngrok-free.dev/api/comments';
 
 // --- ФУНКЦИЯ УТИЛИТА 1: Преобразование плоского списка в дерево ---
 const buildCommentTree = (comments) => {

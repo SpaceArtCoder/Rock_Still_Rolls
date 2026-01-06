@@ -44,7 +44,7 @@ const Profile = () => {
       });
       
       if (user.avatarUrl) {
-        setAvatarPreview(`http://localhost:5000${user.avatarUrl}`);
+        setAvatarPreview(`https://uncramped-robbin-patrimonial.ngrok-free.dev${user.avatarUrl}`);
       }
     }
   }, [user]);

@@ -2,11 +2,6 @@ import styles from './CloseButton.module.scss';
 
 function CloseButton({onClose}) {
 
-    // const combinedHandler = () => {
-    //     onClose();
-    //     onChange();
-    // };
-
     return (
         <div className={styles.closeButton_block}>
             <button onClick={() => onClose()} className={styles.closeButton} aria-label="Close" type="button">

@@ -232,11 +232,11 @@ const AuthModal = ({ isOpen, onClose, initialMode, onAuthSuccess, onRegistration
 
   // НОВОЕ: Обработчики OAuth
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:5000/api/oauth/google';
+    window.location.href = 'https://uncramped-robbin-patrimonial.ngrok-free.dev/api/oauth/google';
   };
 
   const handleGithubLogin = () => {
-    window.location.href = 'http://localhost:5000/api/oauth/github';
+    window.location.href = 'https://uncramped-robbin-patrimonial.ngrok-free.dev/api/oauth/github';
   };
 
   if (!isOpen) return null;

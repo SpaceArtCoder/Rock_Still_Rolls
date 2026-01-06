@@ -62,13 +62,6 @@ const NeonFlash = () => {
         // Applying the background container styles using the styles object
         <div className={styles['neon-flash-app-container']}>
             <div className={styles['neon-container']}>
-                {/* Note: Classes defining colors (rock, still, rolls) must be defined globally
-                  or passed as plain strings because they are used by the child component's logic 
-                  to select the correct CSS variable (--light-color). 
-                  Since they only contain CSS variable definitions, keeping them as global/plain 
-                  is acceptable, or you can prefix them if they are complex. 
-                  I've kept them as plain strings as they only modify custom properties.
-                */}
                 <FlickeringWord text="ROCK" className={styles.rock} />
                 <FlickeringWord text="STILL" className={styles.still} />
                 <FlickeringWord text="ROLLS" className={styles.rolls} />

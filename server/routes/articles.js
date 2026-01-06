@@ -1,10 +1,3 @@
-/**
- * РОУТЕР СТАТЕЙ (Articles API)
- * ----------------------------
- * Назначение: Создание, чтение, обновление, удаление (CRUD) статей,
- * а также обработка загрузки изображений на сервер.
- */
-
 import express from 'express';
 import prisma from '../../prisma/client.js';
 import multer from 'multer';
@@ -13,20 +6,12 @@ import fs from 'fs/promises';
 
 const router = express.Router();
 
-// ==========================================
-// 1. НАСТРОЙКА MULTER (Загрузка файлов)
-// ==========================================
-
-/**
- * Определение места хранения и имен файлов.
- * Файлы сохраняются в папку /uploads с уникальным ID во избежание перезаписи.
- */
+// 1. Настройка Multer
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/');
     },
     filename: (req, file, cb) => {
-        // Генерируем имя: timestamp + случайное число + расширение оригинала
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         cb(null, uniqueSuffix + path.extname(file.originalname));
     }
@@ -34,25 +19,17 @@ const storage = multer.diskStorage({
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 } // Лимит: 5 МБ
+    limits: { fileSize: 5 * 1024 * 1024 }
 });
 
-// ==========================================
-// 2. МАРШРУТЫ API (ENDPOINTS)
-// ==========================================
-
-/**
- * A. СОЗДАНИЕ: POST /api/articles
- * Принимает текстовые данные и один файл 'imageFile'.
- */
-
+// ------------------------------------
+// A. CREATE: POST /api/articles
+// ------------------------------------
 router.post('/', upload.single('imageFile'), async (req, res) => {
     const { title, content, excerpt, slug, status, categoryName } = req.body;
     const urlToImage = req.file ? `/uploads/${req.file.filename}` : undefined;
 
-    // Валидация обязательных полей
     if (!title || !content || !slug) {
-        // Если данные невалидны, но файл уже загружен — удаляем его
         if (req.file) {
             try { await fs.unlink(req.file.path); } catch (err) { console.error('Failed to delete file:', err); }
         }
@@ -62,92 +39,297 @@ router.post('/', upload.single('imageFile'), async (req, res) => {
     try {
         let categoriesToConnect = [];
 
-        // Если указана категория, ищем её ID или создаем связь
-        if (categoryName) {
-            const category = await prisma.category.findUnique({
-                where: { name: categoryName }
-            });
-            if (category) {
-                categoriesToConnect.push({
-                    category: { connect: { id: category.id } }
-                });
-            }
+        if (categoryName === 'События') {
+            categoriesToConnect = ['События', 'Новости'];
+        } else if (categoryName === 'Исполнители') {
+            categoriesToConnect = ['Исполнители'];
+        } else {
+            categoriesToConnect = ['Новости'];
         }
 
         const newArticle = await prisma.article.create({
             data: {
-                title,
-                content,
-                excerpt,
-                slug,
-                status: status || 'DRAFT',
+                title, content, excerpt, slug,
                 image: urlToImage,
-                categories: { create: categoriesToConnect }
+                status: status || 'draft',
+                categories: {
+                    create: categoriesToConnect.map(name => ({
+                        category: {
+                            connect: { name: name }
+                        }
+                    }))
+                }
             },
+            include: {
+                categories: {
+                    select: { category: { select: { name: true } } }
+                }
+            }
         });
+
         res.status(201).json(newArticle);
+
     } catch (error) {
-        res.status(500).json({ error: 'Failed to create article.', details: error.message });
+        if (error.code === 'P2002') {
+            return res.status(409).json({ error: 'The provided URL Slug already exists.' });
+        }
+        if (error.message.includes('Record to connect was not found')) {
+            return res.status(400).json({ error: `One of the required categories does not exist in the database.` });
+        }
+        res.status(500).json({ error: 'Failed to save the article.', details: error.message });
     }
 });
 
-/**
- * B. ПОЛУЧЕНИЕ ВСЕХ: GET /api/articles
- * Поддерживает полнотекстовый поиск через query-параметр ?search=
- */
-router.get('/', async (req, res) => {
-    const { search } = req.query;
+// ------------------------------------
+// INFINITE SCROLL PAGINATION (ПЕРЕМЕЩЕНО СЮДА!)
+// GET /api/articles/paginated
+// ------------------------------------
+router.get('/paginated', async (req, res) => {
+    console.log('📊 Paginated request:', req.query);
+
+    const { category, cursor, limit = 10 } = req.query;
+
+    const take = parseInt(limit);
+    const cursorId = cursor ? parseInt(cursor) : null;
+
+    let categoryFilterName = category ? decodeURIComponent(category) : null;
+
+    let whereCondition = {};
+
+    if (categoryFilterName) {
+        if (categoryFilterName === 'Новости') {
+            whereCondition.categories = {
+                some: {
+                    category: { name: 'Новости' }
+                },
+                none: {
+                    category: { name: 'Исполнители' }
+                }
+            };
+        } else {
+            whereCondition.categories = {
+                some: {
+                    category: { name: categoryFilterName }
+                }
+            };
+        }
+    }
 
     try {
         const articles = await prisma.article.findMany({
-            where: search ? {
-                OR: [
-                    { title: { contains: search } },
-                    { content: { contains: search } }
-                ]
-            } : {},
-            include: {
-                categories: { include: { category: true } },
-                author: { select: { name: true, avatarUrl: true } }
+            where: whereCondition,
+            take: take + 1,
+            ...(cursorId && {
+                skip: 1,
+                cursor: { id: cursorId }
+            }),
+            orderBy: {
+                createdAt: 'desc'
             },
-            orderBy: { createdAt: 'desc' }
+            include: {
+                categories: {
+                    select: {
+                        category: {
+                            select: { name: true }
+                        }
+                    }
+                }
+            }
+        });
+
+        const hasMore = articles.length > take;
+        const resultArticles = hasMore ? articles.slice(0, -1) : articles;
+        const nextCursor = hasMore ? resultArticles[resultArticles.length - 1].id : null;
+
+        console.log(`✅ Returning ${resultArticles.length} articles, hasMore: ${hasMore}`);
+
+        res.json({
+            articles: resultArticles,
+            nextCursor,
+            hasMore
+        });
+
+    } catch (error) {
+        console.error('❌ Pagination error:', error);
+        res.status(500).json({
+            error: 'Failed to fetch articles',
+            details: error.message
+        });
+    }
+});
+
+// ------------------------------------
+// SEARCH
+// ------------------------------------
+router.get('/search', async (req, res) => {
+    const searchQuery = req.query.q;
+
+    if (!searchQuery || searchQuery.trim() === '') {
+        return res.json([]);
+    }
+
+    try {
+        const articles = await prisma.$queryRaw`
+            SELECT 
+                a.id, 
+                a.title, 
+                a.slug, 
+                a.excerpt, 
+                a.image, 
+                a.created_at as createdAt,
+                GROUP_CONCAT(c.name) as categories,
+                MATCH(a.title, a.content, a.excerpt) AGAINST(${searchQuery} IN NATURAL LANGUAGE MODE) as relevance
+            FROM articles a
+            LEFT JOIN article_categories ac ON a.id = ac.articleId
+            LEFT JOIN categories c ON ac.categoryId = c.id
+            WHERE a.status = 'published'
+            AND MATCH(a.title, a.content, a.excerpt) AGAINST(${searchQuery} IN NATURAL LANGUAGE MODE)
+            GROUP BY a.id, a.title, a.slug, a.excerpt, a.image, a.created_at
+            ORDER BY relevance DESC, a.created_at DESC
+            LIMIT 10
+        `;
+
+        const formattedArticles = articles.map(article => ({
+            id: Number(article.id),
+            title: article.title,
+            slug: article.slug,
+            excerpt: article.excerpt,
+            image: article.image,
+            createdAt: article.createdAt,
+            categories: article.categories ? article.categories.split(',') : [],
+            relevance: Number(article.relevance)
+        }));
+
+        res.json(formattedArticles);
+
+    } catch (error) {
+        console.error('Search error:', error);
+        res.status(500).json({ error: 'Search failed.', details: error.message });
+    }
+});
+
+// ------------------------------------
+// C. READ ONE: GET /api/articles/:slug
+// ------------------------------------
+router.get('/:slug', async (req, res) => {
+    try {
+        const article = await prisma.article.findUnique({ where: { slug: req.params.slug } });
+        if (!article) return res.status(404).json({ message: "Article not found." });
+        res.json(article);
+    } catch (error) {
+        res.status(500).json({ message: "Failed to retrieve the article.", error: error.message });
+    }
+});
+
+// ------------------------------------
+// B. READ ALL: GET /api/articles?category=...
+// ------------------------------------
+router.get('/', async (req, res) => {
+    const categoryQuery = req.query.category;
+    const limitQuery = req.query.limit;
+
+    let categoryFilterName = categoryQuery ? decodeURIComponent(categoryQuery) : null;
+    let limit = limitQuery ? parseInt(limitQuery) : undefined;
+
+    let whereCondition = {};
+
+    if (categoryFilterName) {
+        if (categoryFilterName === 'Новости') {
+            whereCondition.categories = {
+                some: {
+                    category: {
+                        name: 'Новости'
+                    }
+                },
+                none: {
+                    category: {
+                        name: 'Исполнители'
+                    }
+                }
+            };
+        } else {
+            whereCondition.categories = {
+                some: {
+                    category: {
+                        name: categoryFilterName
+                    }
+                }
+            };
+        }
+    }
+
+    try {
+        const articles = await prisma.article.findMany({
+            where: whereCondition,
+            orderBy: {
+                createdAt: 'desc',
+            },
+            take: limit,
+            include: {
+                categories: {
+                    select: { category: { select: { name: true } } }
+                }
+            }
         });
         res.json(articles);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch articles.' });
+        res.status(500).json({ message: "Failed to retrieve articles.", error: error.message });
     }
 });
 
-/**
- * C. ПОЛУЧЕНИЕ ОДНОЙ: GET /api/articles/:slug
- * Поиск по человекопонятному URL (slug) вместо ID.
- */
-router.get('/:slug', async (req, res) => {
-    try {
-        const article = await prisma.article.findUnique({
-            where: { slug: req.params.slug },
-            include: {
-                categories: { include: { category: true } },
-                author: true
-            }
-        });
-        if (!article) return res.status(404).json({ error: 'Article not found.' });
-        res.json(article);
-    } catch (error) {
-        res.status(500).json({ error: 'Error fetching article.' });
-    }
-});
-
-/**
- * D. ОБНОВЛЕНИЕ: PUT /api/articles/:id
- */
+// ------------------------------------
+// D. UPDATE: PUT /api/articles/:id
+// ------------------------------------
 router.put('/:id', upload.single('imageFile'), async (req, res) => {
     const articleId = parseInt(req.params.id);
-    const { title, content, excerpt, slug, status } = req.body;
+    const { title, content, excerpt, slug, status, categoryName, oldImage } = req.body;
+    const urlToImage = req.file ? `/uploads/${req.file.filename}` : oldImage;
+
+    const articleUpdateData = {
+        title,
+        content,
+        excerpt,
+        slug,
+        status,
+        image: urlToImage,
+        updatedAt: new Date(),
+    };
 
     try {
-        const articleUpdateData = { title, content, excerpt, slug, status };
-        if (req.file) articleUpdateData.image = `/uploads/${req.file.filename}`;
+        await prisma.articleOnCategory.deleteMany({
+            where: { articleId: articleId },
+        });
+
+        let categoriesToConnect = [];
+
+        const primaryCategory = await prisma.category.findUnique({
+            where: { name: categoryName },
+        });
+
+        if (primaryCategory) {
+            categoriesToConnect.push(primaryCategory.id);
+
+            if (categoryName === 'События') {
+                const newsCategory = await prisma.category.findUnique({
+                    where: { name: 'Новости' },
+                });
+                if (newsCategory) {
+                    categoriesToConnect.push(newsCategory.id);
+                }
+            }
+        }
+
+        const categoryData = categoriesToConnect.map(catId => ({
+            articleId: articleId,
+            categoryId: catId,
+        }));
+
+        if (categoryData.length > 0) {
+            await prisma.articleOnCategory.createMany({
+                data: categoryData,
+                skipDuplicates: true,
+            });
+        }
 
         const updatedArticle = await prisma.article.update({
             where: { id: articleId },
@@ -157,32 +339,34 @@ router.put('/:id', upload.single('imageFile'), async (req, res) => {
         res.json(updatedArticle);
     } catch (error) {
         if (error.code === 'P2025') return res.status(404).json({ error: 'Article not found.' });
-        res.status(500).json({ error: 'Failed to update article.' });
+        res.status(500).json({ error: 'Failed to update the article.', details: error.message });
     }
 });
 
-/**
- * E. УДАЛЕНИЕ: DELETE /api/articles/:id
- */
+// ------------------------------------
+// E. DELETE: DELETE /api/articles/:id
+// ------------------------------------
 router.delete('/:id', async (req, res) => {
+    const articleId = parseInt(req.params.id);
+
     try {
-        const id = parseInt(req.params.id);
-        await prisma.article.delete({ where: { id } });
+        await prisma.article.delete({ where: { id: articleId } });
         res.status(200).json({ message: 'Article deleted successfully.' });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to delete article.' });
+        if (error.code === 'P2025') return res.status(404).json({ error: 'Article not found.' });
+        res.status(500).json({ error: 'Failed to delete the article.', details: error.message });
     }
 });
 
-/**
- * F. ЗАГРУЗКА ИЗ РЕДАКТОРА: POST /api/articles/upload-image
- * Специальный endpoint для вставки картинок прямо в тело статьи (например, через TinyMCE/CKEditor)
- */
+// ------------------------------------
+// F. UPLOAD IMAGE: POST /api/articles/upload-image
+// ------------------------------------
 router.post('/upload-image', upload.single('uploadFile'), (req, res) => {
-    if (!req.file) return res.status(400).json({ error: 'No file uploaded.' });
-    
-    // Возвращаем путь к файлу, чтобы редактор мог отобразить картинку
-    res.json({ location: `/uploads/${req.file.filename}` });
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded.' });
+    }
+    const imageUrl = `/uploads/${req.file.filename}`;
+    res.json({ url: imageUrl, message: 'Image uploaded successfully.' });
 });
 
 export default router;

@@ -16,7 +16,7 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }) => {
         setIsLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/forgot-password', {
+            const response = await axios.post('https://uncramped-robbin-patrimonial.ngrok-free.dev/api/auth/forgot-password', {
                 email: email.trim().toLowerCase()
             }, {
                 withCredentials: true

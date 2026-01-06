@@ -11,7 +11,7 @@ function Events() {
         error,
         hasMore,
         lastElementRef
-    } = useInfiniteScroll('http://localhost:5000/api/articles/paginated', {
+    } = useInfiniteScroll('https://uncramped-robbin-patrimonial.ngrok-free.dev/api/articles/paginated', {
         category: 'События',
         limit: 10
     });

@@ -56,7 +56,7 @@ const SearchButton = () => {
         setIsLoading(true);
         try {
             const response = await fetch(
-                `http://localhost:5000/api/articles/search?q=${encodeURIComponent(query)}`
+                `https://uncramped-robbin-patrimonial.ngrok-free.dev/api/articles/search?q=${encodeURIComponent(query)}`
             );
             const data = await response.json();
             setSearchResults(data);

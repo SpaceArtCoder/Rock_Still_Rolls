@@ -65,7 +65,7 @@ const CommentForm = ({ articleSlug, parentId = null, onSubmitted }) => {
             <div className={styles.header}>
                 {user?.avatarUrl && (
                     <img
-                        src={`http://localhost:5000${user.avatarUrl}`}
+                        src={`https://uncramped-robbin-patrimonial.ngrok-free.dev${user.avatarUrl}`}
                         alt={user?.name}
                         className={styles.avatar}
                     />

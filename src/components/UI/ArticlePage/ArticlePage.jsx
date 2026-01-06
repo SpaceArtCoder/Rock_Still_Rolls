@@ -19,7 +19,7 @@ const ArticlePage = () => {
     useEffect(() => {
         const fetchArticle = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/articles/${decodedSlug}`);
+                const response = await fetch(`https://uncramped-robbin-patrimonial.ngrok-free.dev/api/articles/${decodedSlug}`);
                 
                 if (!response.ok) {
                     throw new Error('Article not found or server error.');
@@ -58,7 +58,7 @@ const ArticlePage = () => {
             
             {article.image && (
                 <img 
-                    src={`http://localhost:5000${article.image}`} 
+                    src={`https://uncramped-robbin-patrimonial.ngrok-free.dev${article.image}`} 
                     alt={article.title} 
                     className={styles.featuredImage}
                 />

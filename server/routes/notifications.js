@@ -1,37 +1,34 @@
-/**
- * РОУТЕР УВЕДОМЛЕНИЙ (Notifications API)
- * --------------------------------------
- * Назначение: Управление системными уведомлениями пользователя.
- * Модуль содержит вспомогательную функцию для создания уведомлений 
- * из других частей системы (комментарии, лайки).
- */
-
+// server/routes/notifications.js
 import express from 'express';
 import prisma from '../../prisma/client.js';
-import { protect } from './auth.js'; 
+import { protect } from './auth.js'; // Импортируем middleware авторизации
 
 const router = express.Router();
 
-// ==========================================
-// 1. ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ (Exported)
-// ==========================================
+// ========================================
+// ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ
+// ========================================
 
 /**
- * createNotification
- * Используется внутри сервера (в роутерах статей/комментариев).
- * Не является маршрутом API, а служит для записи события в БД.
+ * Создает уведомление в базе данных
+ * @param {Object} data - Данные уведомления
+ * @param {number} data.userId - ID пользователя-получателя
+ * @param {string} data.type - Тип уведомления
+ * @param {string} data.message - Текст уведомления
+ * @param {string} [data.link] - Ссылка (опционально)
+ * @param {number} [data.fromUserId] - ID отправителя (опционально)
+ * @param {number} [data.commentId] - ID комментария (опционально)
  */
-
 export const createNotification = async (data) => {
     try {
         await prisma.notification.create({
             data: {
-                userId: data.userId,         // Кому придет
-                type: data.type,             // Например: 'COMMENT_LIKE', 'REPLY'
-                message: data.message,       // Текст для отображения
-                link: data.link || null,     // Куда перейдет юзер при клике
-                fromUserId: data.fromUserId || null, // Кто инициировал (актор)
-                commentId: data.commentId || null,   // Привязка к объекту (если есть)
+                userId: data.userId,
+                type: data.type,
+                message: data.message,
+                link: data.link || null,
+                fromUserId: data.fromUserId || null,
+                commentId: data.commentId || null,
             }
         });
     } catch (error) {
@@ -39,25 +36,41 @@ export const createNotification = async (data) => {
     }
 };
 
-// ==========================================
-// 2. МАРШРУТЫ API (Доступны фронтенду)
-// ==========================================
+// ========================================
+// МАРШРУТЫ API
+// ========================================
 
-/**
- * ПОЛУЧЕНИЕ: GET /api/notifications
- * Возвращает список уведомлений для текущего авторизованного пользователя.
- */
+// 1. Получить все уведомления текущего пользователя
 router.get('/', protect, async (req, res) => {
     try {
         const notifications = await prisma.notification.findMany({
-            where: { userId: req.userId },
+            where: {
+                userId: req.userId
+            },
             include: {
-                // Подтягиваем данные того, кто вызвал уведомление (аватар, имя)
                 fromUser: {
-                    select: { name: true, avatarUrl: true }
+                    select: {
+                        id: true,
+                        name: true,
+                        avatarUrl: true
+                    }
+                },
+                comment: {
+                    select: {
+                        id: true,
+                        content: true,
+                        article: { // <-- ИСПРАВЛЕНИЕ: Включаем связанную статью
+                            select: { // <-- ИСПРАВЛЕНИЕ: Выбираем ее слаг
+                                slug: true 
+                            }
+                        }
+                    }
                 }
             },
-            orderBy: { createdAt: 'desc' } // Сначала самые свежие
+            orderBy: {
+                createdAt: 'desc'
+            },
+            take: 50 // Последние 50 уведомлений
         });
 
         res.json(notifications);
@@ -67,56 +80,29 @@ router.get('/', protect, async (req, res) => {
     }
 });
 
-/**
- * ПРОЧИТАТЬ ВСЕ: PATCH /api/notifications/read-all
- * Массовое обновление статуса 'read' для всех уведомлений пользователя.
- */
-router.patch('/read-all', protect, async (req, res) => {
+// 2. Получить количество непрочитанных уведомлений
+router.get('/unread-count', protect, async (req, res) => {
     try {
-        await prisma.notification.updateMany({
+        const count = await prisma.notification.count({
             where: {
                 userId: req.userId,
                 read: false
-            },
-            data: { read: true }
-        });
-        res.json({ message: 'Все уведомления помечены как прочитанные' });
-    } catch (error) {
-        res.status(500).json({ error: 'Ошибка при обновлении статуса' });
-    }
-});
-
-/**
- * УДАЛИТЬ ПРОЧИТАННЫЕ: DELETE /api/notifications/clean
- * Очистка базы данных от старых уведомлений, которые юзер уже видел.
- */
-router.delete('/clean', protect, async (req, res) => {
-    try {
-        await prisma.notification.deleteMany({
-            where: {
-                userId: req.userId,
-                read: true
             }
         });
-        res.json({ message: 'Прочитанные уведомления удалены' });
+
+        res.json({ count });
     } catch (error) {
-        res.status(500).json({ error: 'Не удалось очистить уведомления' });
+        console.error('Ошибка подсчета непрочитанных:', error);
+        res.status(500).json({ error: 'Не удалось получить количество' });
     }
 });
 
-/**
- * УДАЛИТЬ ОДНО: DELETE /api/notifications/:id
- * Удаление конкретного уведомления с проверкой прав доступа.
- */
-router.delete('/:id', protect, async (req, res) => {
+// 3. Отметить уведомление как прочитанное
+router.put('/:id/read', protect, async (req, res) => {
     try {
         const notificationId = parseInt(req.params.id);
 
-        if (isNaN(notificationId)) {
-            return res.status(400).json({ error: 'Неверный ID уведомления.' });
-        }
-
-        // КРИТИЧНО: Проверяем, что уведомление принадлежит именно этому пользователю
+        // Проверяем, что уведомление принадлежит пользователю
         const notification = await prisma.notification.findFirst({
             where: {
                 id: notificationId,
@@ -125,7 +111,80 @@ router.delete('/:id', protect, async (req, res) => {
         });
 
         if (!notification) {
-            return res.status(404).json({ error: 'Уведомление не найдено или доступ запрещен' });
+            return res.status(404).json({ error: 'Уведомление не найдено' });
+        }
+
+        const updated = await prisma.notification.update({
+            where: { id: notificationId },
+            data: { read: true }
+        });
+
+        res.json(updated);
+    } catch (error) {
+        console.error('Ошибка обновления уведомления:', error);
+        res.status(500).json({ error: 'Не удалось обновить уведомление' });
+    }
+});
+
+// 4. Отметить все уведомления как прочитанные
+router.put('/mark-all-read', protect, async (req, res) => {
+    try {
+        await prisma.notification.updateMany({
+            where: {
+                userId: req.userId,
+                read: false
+            },
+            data: {
+                read: true
+            }
+        });
+
+        res.json({ message: 'Все уведомления отмечены как прочитанные' });
+    } catch (error) {
+        console.error('Ошибка обновления уведомлений:', error);
+        res.status(500).json({ error: 'Не удалось обновить уведомления' });
+    }
+});
+
+// 6. Удалить все прочитанные уведомления
+router.delete('/clear-read', protect, async (req, res) => {
+    try {
+        await prisma.notification.deleteMany({
+            where: {
+                userId: req.userId,
+                read: true
+            }
+        });
+
+        res.json({ message: 'Прочитанные уведомления удалены' });
+    } catch (error) {
+        console.error('Ошибка удаления уведомлений:', error);
+        res.status(500).json({ error: 'Не удалось удалить уведомления' });
+    }
+});
+
+
+// 5. Удалить уведомление
+router.delete('/:id', protect, async (req, res) => {
+    try {
+        const notificationId = parseInt(req.params.id);
+
+        // --- КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ #1: Валидация ID ---
+        if (isNaN(notificationId)) {
+            return res.status(400).json({ error: 'Неверный ID уведомления.' });
+        }
+        // ---------------------------------------------------
+
+        // Проверяем, что уведомление принадлежит пользователю
+        const notification = await prisma.notification.findFirst({
+            where: {
+                id: notificationId,
+                userId: req.userId
+            }
+        });
+
+        if (!notification) {
+            return res.status(404).json({ error: 'Уведомление не найдено' });
         }
 
         await prisma.notification.delete({
@@ -134,6 +193,7 @@ router.delete('/:id', protect, async (req, res) => {
 
         res.json({ message: 'Уведомление удалено' });
     } catch (error) {
+        console.error('Ошибка удаления уведомления:', error);
         res.status(500).json({ error: 'Не удалось удалить уведомление' });
     }
 });

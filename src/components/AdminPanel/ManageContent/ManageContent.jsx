@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-// import { useSearchParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import ServiceButtons from '../ServiceButtons/ServiceButtons.jsx';
 import styles from './ManageContent.module.scss';
@@ -10,10 +9,7 @@ function ManageContent() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // const [searchParams] = useSearchParams();
-    // const category = searchParams.get('category');
-    
-    //Состояние меняется после закрытия окна редактирования статьи
+   
     const [refreshListCount, setRefreshListCount] = useState(0);
 
     //retrieving articles from DB
@@ -21,7 +17,7 @@ function ManageContent() {
         async function fetchArticles() {
             try {
                 // Запрос к Node.js бэкенду, который слушает порт 5000
-                const response = await fetch('http://localhost:5000/api/articles');
+                const response = await fetch('https://uncramped-robbin-patrimonial.ngrok-free.dev/api/articles');
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);

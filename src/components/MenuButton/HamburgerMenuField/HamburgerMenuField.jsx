@@ -5,18 +5,6 @@ import styles from './HamburgerMenuField.module.scss';
 
 
 function HamburgerMenuField({visibility}) {
-    // const [isOpen, setIsOpen] = useState(visibility);
-    // const location = useLocation();
-
-    // useEffect(() => {
-    //     setIsOpen(visibility);
-    // }, [visibility]);
-
-    // useEffect(() => {
-    //     if (isOpen) {
-    //         setIsOpen(false);
-    //     }
-    // }, [location]);
 
     return (
         <section className={visibility ? `${styles.hamburger_menu_field_container} ${styles.show}` : styles.hamburger_menu_field_container}>

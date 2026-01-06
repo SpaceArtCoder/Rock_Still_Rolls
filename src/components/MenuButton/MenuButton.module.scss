@@ -1,33 +1,5 @@
 @use '../../assets/styles/abstracts/mixins' as mixins;
 
-// button.menu_toggle {
-//     display: none;
-//     color: var(--color);
-// }
-
-// @include mixins.menu_toggle(428px) {
-//     button.menu_toggle {
-//         display: block;
-//         svg {
-//             rect {
-
-//             }
-//         }
-//     }
-//     button.menu_toggle_open {
-//         display: none;
-//     }
-// }
-
-// .close_button {
-//     display: none;
-// }
-
-// .show_button {
-//     display: flex;
-//     z-index: 2;
-// }
-
 .menu_toggle,
 .menu_toggle_open {
   width: 32px;

@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api/auth';
+const API_BASE_URL = 'https://uncramped-robbin-patrimonial.ngrok-free.dev/api/auth';
 
 const getInitialState = () => {
     return {

@@ -89,7 +89,7 @@ const NewsArticleForm = ({article = null, onChange}) => {
         uploadPayload.append('uploadFile', illustrationFile); 
         
         try {
-            const response = await fetch('http://localhost:5000/api/articles/upload-image', {
+            const response = await fetch('https://uncramped-robbin-patrimonial.ngrok-free.dev/api/articles/upload-image', {
                 method: 'POST',
                 body: uploadPayload,
             });

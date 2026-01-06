@@ -6,7 +6,6 @@ function ContactUs() {
     return (
         <section className={styles.contact_us_container}>
             <NeonFlash />
-            {/* <div className="text_block">some text</div> */}
             <div className={styles.form_block}>
                 <FeedbackForm />
             </div>

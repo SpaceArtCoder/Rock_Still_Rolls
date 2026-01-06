@@ -14,7 +14,7 @@ const NewsFeed = ({newsCount = null, templateClassName = null}) => {
             try {
                 const countParam = newsCount ? `&limit=${newsCount}` : '';
                 // Запрос к Node.js бэкенду, который слушает порт 5000
-                const response = await fetch(`http://localhost:5000/api/articles?category=Новости${countParam}`);
+                const response = await fetch(`https://uncramped-robbin-patrimonial.ngrok-free.dev/api/articles?category=Новости${countParam}`);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);

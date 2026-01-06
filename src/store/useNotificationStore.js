@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api/notifications';
+const API_BASE_URL = 'https://uncramped-robbin-patrimonial.ngrok-free.dev/api/notifications';
 
 // Настройка axios для отправки cookies
 axios.defaults.withCredentials = true;
