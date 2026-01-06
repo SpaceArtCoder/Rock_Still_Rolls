@@ -1,21 +1,14 @@
+// src/components/AuthModal/ForgotPasswordModal.jsx
 import { useState } from 'react';
 import axios from 'axios';
 import styles from './AuthModal.module.scss';
 
-/**
- * Модальное окно для восстановления пароля пользователя.
- * Позволяет отправить запрос на сброс пароля по email.
- */
 const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }) => {
     const [email, setEmail] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
-    /**
-     * Обрабатывает отправку формы восстановления пароля.
-     * Отправляет запрос на сервер для сброса пароля.
-     */
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -29,27 +22,23 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }) => {
                 withCredentials: true
             });
 
-            setSuccessMessage(response.data.message || 'Новый пароль отправлен на вашу почту!');
+            setSuccessMessage(response.data.message);
             setEmail('');
 
-            // Автоматическое закрытие модального окна после успешной отправки
+            // Закрываем модалку через 3 секунды после успеха
             setTimeout(() => {
-                handleClose();
+                onClose();
                 if (onSuccess) onSuccess();
-            }, 4000);
+            }, 3000);
 
         } catch (err) {
-            console.error('Ошибка восстановления пароля:', err);
+            console.error('Forgot password error:', err);
             setError(err.response?.data?.error || 'Произошла ошибка. Попробуйте позже.');
         } finally {
             setIsLoading(false);
         }
     };
 
-    /**
-     * Обрабатывает закрытие модального окна.
-     * Сбрасывает все состояния формы.
-     */
     const handleClose = () => {
         setEmail('');
         setError('');
@@ -62,7 +51,6 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }) => {
     return (
         <div className={styles.overlay} onClick={handleClose}>
             <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-                {/* Кнопка закрытия модального окна */}
                 <button
                     className={styles.closeButton}
                     onClick={handleClose}
@@ -76,29 +64,21 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }) => {
                 <div className={styles.header}>
                     <h2 className={styles.title}>🔐 Восстановление пароля</h2>
                     <p className={styles.subtitle}>
-                        Введите email для получения нового пароля
+                        Введите email, использованный при регистрации
                     </p>
                 </div>
 
                 {successMessage ? (
-                    // Отображение при успешной отправке запроса
                     <div className={styles.successContainer}>
-                        <span className={styles.successIcon}>✅</span>
+                        <div className={styles.successIcon}>✅</div>
                         <p className={styles.successMessage}>{successMessage}</p>
                         <p className={styles.successHint}>
-                            Проверьте вашу почту. Письмо может попасть в папку "Спам" или "Рассылки".
+                            Проверьте вашу почту. Письмо может попасть в папку "Спам".
                         </p>
-                        <button 
-                            className={styles.backButton} 
-                            onClick={handleClose}
-                        >
-                            Вернуться ко входу
-                        </button>
                     </div>
                 ) : (
-                    // Форма для ввода email
                     <form onSubmit={handleSubmit} className={styles.form}>
-                        <div className={styles.inputGroup}>
+                        <div className={styles.formGroup}>
                             <label htmlFor="forgot-email" className={styles.label}>
                                 Email адрес
                             </label>
@@ -107,7 +87,7 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }) => {
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className={`${styles.input} ${error ? styles.inputError : ''}`}
+                                className={styles.input}
                                 placeholder="your@email.com"
                                 required
                                 disabled={isLoading}
@@ -115,7 +95,6 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }) => {
                             />
                         </div>
 
-                        {/* Отображение ошибки сервера */}
                         {error && (
                             <div className={styles.errorMessage}>
                                 <svg
@@ -132,7 +111,6 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }) => {
                             </div>
                         )}
 
-                        {/* Информационное сообщение */}
                         <div className={styles.infoBox}>
                             <svg
                                 className={styles.infoIcon}
@@ -145,12 +123,11 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }) => {
                                 <path d="M12 16v-4M12 8h.01" />
                             </svg>
                             <p className={styles.infoText}>
-                                Мы сгенерируем новый временный пароль. 
-                                Обязательно смените его в профиле после входа.
+                                Мы отправим вам новый пароль на указанный email.
+                                После входа рекомендуем сменить пароль в настройках профиля.
                             </p>
                         </div>
 
-                        {/* Кнопка отправки формы */}
                         <button
                             type="submit"
                             className={styles.submitButton}
@@ -162,16 +139,14 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }) => {
                                     Отправка...
                                 </>
                             ) : (
-                                '📧 Получить новый пароль'
+                                '📧 Отправить новый пароль'
                             )}
                         </button>
 
-                        {/* Кнопка возврата к форме входа */}
                         <button
                             type="button"
                             className={styles.backButton}
                             onClick={handleClose}
-                            disabled={isLoading}
                         >
                             ← Назад к входу
                         </button>

@@ -1,14 +1,13 @@
 @use '../../../assets/styles/abstracts/mixins.scss' as mixins;
 
-/* Подключение шрифта Oooh Baby */
 @font-face {
     font-family: "Oooh Baby";
     src: url('../../../assets/fonts/OoohBaby-Regular.ttf') format('truetype');
 }
 
-/* Основной контейнер приложения */
+/* Container/Background Styles */
 .neon-flash-app-container {
-    background-color: var(--background-color);
+    background-color: var(--background-color); 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -18,72 +17,66 @@
     font-weight: 800;
     font-style: normal;
     text-transform: uppercase;
-    width: 50%;
-    
-    /* Адаптивность для маленьких экранов */
+    width: 50%; 
     @include mixins.max-width(sm) {
         width: 100%;
     }
 }
 
-/* Контейнер для неонового текста */
 .neon-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    line-height: 0.8;
+    line-height: 0.8; 
 }
 
-/* Стили для слова */
 .word {
     font-size: 8rem;
     padding: 0 1rem;
     position: relative;
-    color: transparent;
-    text-shadow: none;
-    
-    /* Адаптивность для маленьких экранов */
+    color: transparent; 
+    text-shadow: none; 
     @include mixins.max-width(sm) {
         font-size: 6rem;
     }
 
-    /* Адаптивность для средних экранов */
     @include mixins.width-rage(md, lg) {
         font-size: 6.4rem;
     }
 }
 
-/* Стили для отдельной буквы */
 .letter {
-    display: inline-block;
-    transition: all 0.1s ease-in-out;
+    display: inline-block; 
+    transition: all 0.1s ease-in-out; 
 }
 
-/* --- Переменные цветов и определения --- */
 
-/* Желтый цвет (дорожная разметка) для слов "ROCK" и "ROLLS" */
+/* --- Color Variables and Definitions (These classes will be outside the module import 
+       but the styles still work as they set CSS custom properties) --- */
+
+/* Yellow (Road Marking) */
 .rock, .rolls {
-    --light-color: #f7d90c;
+    --light-color: #f7d90c; 
 }
 
-/* Красный цвет (кровь) для слова "STILL" */
+/* Red (Blood) */
 .still {
-    --light-color: #c21113;
+    --light-color: #c21113; 
 }
 
-/* --- Состояние "Свет включен" --- */
+
+/* --- The "Light On" State --- */
 
 .flash-on {
-    /* Тело трубки теперь ярко-белое */
-    color: #ffffff !important;
+    /* Tube body is now bright white */
+    color: #ffffff !important; 
 
-    /* Мякое, рассеянное свечение */
+    /* Soft, diffused glow */
     text-shadow: 
-        0 0 5px var(--light-color),
-        0 0 15px var(--light-color),
+        0 0 5px var(--light-color), 
+        0 0 15px var(--light-color), 
         0 0 30px var(--light-color),
-        0 0 50px var(--light-color) !important;
+        0 0 50px var(--light-color) !important; 
     
-    /* Мгновенный переход для эффекта мерцания */
-    transition: all 0s;
+    transition: all 0s; 
 }

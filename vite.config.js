@@ -22,4 +22,6 @@ export default defineConfig({
     environment: 'jsdom',    // Эмуляция браузера для тестов
     setupFiles: './src/setupTests.js', // Файл с настройками (создадим его ниже)
   },
+    base: '/Rock_Still_Rolls/',
 })
+

@@ -1,13 +1,11 @@
 @use '../../assets/styles/abstracts/mixins.scss' as mixins;
 
-/* Основной контейнер компонента поиска */
 .searchContainer {
   position: relative;
   display: inline-flex;
   align-items: center;
 }
 
-/* Кнопка открытия/закрытия поиска */
 .searchButton {
   width: 48px;
   height: 48px;
@@ -27,7 +25,6 @@
     transform: scale(1.05);
   }
   
-  /* Стили для активного состояния кнопки */
   &.active {
     background: var(--hover-link-background-color);
     color: var(--hover-link-color);
@@ -38,7 +35,6 @@
   }
 }
 
-/* Иконка поиска на кнопке */
 .searchIcon {
   width: 24px;
   height: 24px;
@@ -50,7 +46,6 @@
   }
 }
 
-/* Панель поиска с выпадающими результатами */
 .searchPanel {
   position: absolute;
   top: calc(100% + 10px);
@@ -68,27 +63,23 @@
   display: flex;
   flex-direction: column;
   
-  /* Стили для открытого состояния панели */
   &.open {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
   }
 
-  /* Адаптивность для мобильных устройств */
   @include mixins.max-width(sm) {
     width: 305px !important;
   }
 }
 
-/* Контейнер для поля ввода */
 .inputWrapper {
   position: relative;
   padding: 1rem;
   border-bottom: 1px solid var(--hover-link-background-color);
 }
 
-/* Иконка поиска внутри поля ввода */
 .inputIcon {
   position: absolute;
   left: 1.5rem;
@@ -101,7 +92,6 @@
   pointer-events: none;
 }
 
-/* Поле ввода поискового запроса */
 .searchInput {
   width: 100%;
   padding: 0.75rem 3rem 0.75rem 3rem;
@@ -124,7 +114,6 @@
   }
 }
 
-/* Кнопка очистки поля ввода */
 .clearButton {
   position: absolute;
   right: 1.5rem;
@@ -150,13 +139,11 @@
   }
 }
 
-/* Контейнер с результатами поиска */
 .resultsContainer {
   flex: 1;
   overflow-y: auto;
   max-height: 400px;
   
-  /* Кастомный стиль скроллбара */
   &::-webkit-scrollbar {
     width: 8px;
   }
@@ -175,7 +162,6 @@
   }
 }
 
-/* Индикатор загрузки результатов */
 .loading {
   display: flex;
   flex-direction: column;
@@ -186,7 +172,6 @@
   opacity: 0.7;
 }
 
-/* Анимация спиннера загрузки */
 .spinner {
   width: 32px;
   height: 32px;
@@ -201,7 +186,6 @@
   to { transform: rotate(360deg); }
 }
 
-/* Состояние отсутствия результатов поиска */
 .noResults {
   display: flex;
   flex-direction: column;
@@ -223,14 +207,12 @@
   }
 }
 
-/* Список результатов поиска */
 .resultsList {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-/* Элемент результата поиска */
 .resultItem {
   display: flex;
   gap: 1rem;
@@ -248,7 +230,6 @@
   }
 }
 
-/* Изображение статьи в результатах поиска */
 .resultImage {
   width: 80px;
   height: 60px;
@@ -257,13 +238,11 @@
   flex-shrink: 0;
 }
 
-/* Контент результата поиска (текстовая часть) */
 .resultContent {
   flex: 1;
   min-width: 0;
 }
 
-/* Заголовок статьи в результатах поиска */
 .resultTitle {
   font-size: 0.95rem;
   font-weight: 600;
@@ -271,14 +250,13 @@
   margin: 0 0 0.5rem 0;
   line-height: 1.4;
   
-  // Ограничение на 2 строки с многоточием
+  // Ограничение по строкам
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* Краткое описание статьи в результатах поиска */
 .resultExcerpt {
   font-size: 0.85rem;
   color: var(--color);
@@ -286,21 +264,19 @@
   margin: 0 0 0.5rem 0;
   line-height: 1.4;
   
-  // Ограничение на 2 строки с многоточием
+  // Ограничение по строкам
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-/* Дата публикации статьи в результатах поиска */
 .resultDate {
   font-size: 0.75rem;
   color: var(--color);
   opacity: 0.5;
 }
 
-/* Подсветка совпадений в тексте результатов */
 .highlight {
   background: var(--hover-link-color);
   color: var(--background-color);
@@ -309,7 +285,6 @@
   font-weight: 600;
 }
 
-/* Подсказка при пустом поле поиска */
 .hint {
   display: flex;
   align-items: center;
@@ -331,7 +306,7 @@
   }
 }
 
-/* Адаптивность для планшетов и мобильных устройств */
+// Адаптивность
 @media (max-width: 768px) {
   .searchPanel {
     width: 90vw;

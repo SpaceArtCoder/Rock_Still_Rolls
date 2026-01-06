@@ -1,9 +1,9 @@
-/* Основной контейнер компонента уведомлений */
+// src/components/Notifications/NotificationBell.module.scss (ОБНОВЛЕННЫЙ)
+
 .notificationBell {
   position: relative;
 }
 
-/* Кнопка колокольчика */
 .bellButton {
   position: relative;
   width: 40px;
@@ -26,7 +26,6 @@
   }
 }
 
-/* Бейдж с количеством непрочитанных уведомлений */
 .badge {
   position: absolute;
   top: 2px;
@@ -55,7 +54,6 @@
   }
 }
 
-/* Выпадающее меню уведомлений */
 .dropdown {
   position: absolute;
   top: calc(100% + 8px);
@@ -70,7 +68,6 @@
   flex-direction: column;
   animation: slideDown 0.2s ease-out;
 
-  /* Адаптивность для мобильных устройств */
   @media (max-width: 768px) {
     position: fixed;
     top: 60px;
@@ -91,7 +88,6 @@
   }
 }
 
-/* Шапка выпадающего меню */
 .header {
   display: flex;
   justify-content: space-between;
@@ -112,7 +108,6 @@
   gap: 8px;
 }
 
-/* Кнопка "Отметить все как прочитанные" */
 .markAllButton {
   padding: 6px 12px;
   background: transparent;
@@ -129,13 +124,11 @@
   }
 }
 
-/* Контейнер со списком уведомлений */
 .notifications {
   flex: 1;
   overflow-y: auto;
   max-height: 450px;
 
-  /* Кастомный скроллбар */
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -154,7 +147,6 @@
   }
 }
 
-/* Индикатор загрузки уведомлений */
 .loading {
   display: flex;
   flex-direction: column;
@@ -183,7 +175,6 @@
   }
 }
 
-/* Состояние пустого списка уведомлений */
 .empty {
   display: flex;
   flex-direction: column;
@@ -205,7 +196,6 @@
   }
 }
 
-/* Стили отдельного уведомления */
 .notification {
   display: flex;
   gap: 12px;
@@ -223,7 +213,6 @@
     border-bottom: none;
   }
 
-  /* Стили для непрочитанных уведомлений */
   &.unread {
     background: #eff6ff;
 
@@ -245,7 +234,6 @@
   }
 }
 
-/* Контейнер для иконок уведомления */
 .iconWrapper {
   position: relative;
   flex-shrink: 0;
@@ -253,7 +241,6 @@
   height: 44px;
 }
 
-/* Аватар пользователя */
 .avatar {
   width: 44px;
   height: 44px;
@@ -261,7 +248,6 @@
   object-fit: cover;
 }
 
-/* Заглушка для аватара, если фото отсутствует */
 .defaultAvatar {
   width: 44px;
   height: 44px;
@@ -275,7 +261,6 @@
   font-weight: 700;
 }
 
-/* Иконка типа уведомления */
 .typeIcon {
   position: absolute;
   bottom: -2px;
@@ -308,13 +293,11 @@
   }
 }
 
-/* Основное содержимое уведомления */
 .content {
   flex: 1;
   min-width: 0;
 }
 
-/* Текст сообщения уведомления */
 .message {
   margin: 0 0 4px 0;
   font-size: 14px;
@@ -323,7 +306,6 @@
   line-height: 1.4;
 }
 
-/* Превью текста комментария */
 .preview {
   margin: 0 0 4px 0;
   font-size: 13px;
@@ -336,13 +318,11 @@
   -webkit-box-orient: vertical;
 }
 
-/* Время создания уведомления */
 .time {
   font-size: 12px;
   color: #94a3b8;
 }
 
-/* Кнопка удаления уведомления */
 .deleteButton {
   flex-shrink: 0;
   width: 28px;
@@ -376,7 +356,6 @@
   }
 }
 
-/* Футер меню с кнопками управления */
 .footer {
   display: flex;
   gap: 8px;
@@ -401,7 +380,6 @@
     }
   }
 
-  /* Кнопка удаления всех уведомлений */
   .deleteAllButton {
     color: #ef4444;
 

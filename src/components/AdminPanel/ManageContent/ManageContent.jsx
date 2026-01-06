@@ -1,29 +1,30 @@
 import { useState, useEffect } from 'react';
+// import { useSearchParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import ServiceButtons from '../ServiceButtons/ServiceButtons.jsx';
 import styles from './ManageContent.module.scss';
 
-/**
- * Административная панель управления контентом.
- * Реализует CRUD-логику для списка новостей.
- */
 function ManageContent() {
+
     const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    // const [searchParams] = useSearchParams();
+    // const category = searchParams.get('category');
     
-    // Состояние-триггер для обновления списка после редактирования/добавления
+    //Состояние меняется после закрытия окна редактирования статьи
     const [refreshListCount, setRefreshListCount] = useState(0);
 
-    // Загрузка статей из БД
+    //retrieving articles from DB
     useEffect(() => {
         async function fetchArticles() {
             try {
-                setLoading(true);
+                // Запрос к Node.js бэкенду, который слушает порт 5000
                 const response = await fetch('http://localhost:5000/api/articles');
                 
                 if (!response.ok) {
-                    throw new Error(`Ошибка HTTP! Статус: ${response.status}`);
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const data = await response.json();
@@ -38,74 +39,62 @@ function ManageContent() {
         fetchArticles();
     }, [refreshListCount]);
 
-    /**
-     * Обработка удаления статьи
-     * @param {string} articleId - ID удаляемой записи
-     */
+    if (loading) {
+        return <div>Загрузка...</div>;
+    }
+
+    if (error) {
+        return <div>Ошибка: {error.message}</div>;  
+    }
+
     const handleDelete = async (articleId) => {
-        if (!window.confirm("Вы уверены, что хотите удалить эту статью?")) {
-            return;
+    // 1. Подтверждение
+    if (!window.confirm("Вы уверены, что хотите удалить эту статью?")) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:5000/api/articles/${articleId}`, {
+            method: 'DELETE',
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
         }
+        
+        // 2. Обновление списка статей на фронтенде (удаляем статью из стейта)
+        setArticles(prevArticles => prevArticles.filter(a => a.id !== articleId));
+        alert('Статья успешно удалена!');
 
-        try {
-            const response = await fetch(`http://localhost:5000/api/articles/${articleId}`, {
-                method: 'DELETE',
-            });
+    } catch (e) {
+        setError(e.message);
+        alert(`Ошибка при удалении: ${e.message}`);
+    }
+};
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || `Ошибка при удалении: ${response.status}`);
-            }
-            
-            // Оптимистичное обновление UI: убираем статью из стейта
-            setArticles(prevArticles => prevArticles.filter(a => a.id !== articleId));
-            alert('Статья успешно удалена!');
-
-        } catch (e) {
-            alert(`Ошибка при удалении: ${e.message}`);
-        }
-    };
-
-    // Функция для провокации ререндера списка (передается в ServiceButtons)
-    const handleChange = () => {
-        setRefreshListCount(prev => prev + 1);
-    };
-
-    if (loading) return <div className={styles.status_info}>Загрузка...</div>;
-    if (error) return <div className={styles.status_info}>Ошибка: {error}</div>;
+const handleChange = () => {
+    setRefreshListCount(refreshListCount + 1);
+};
 
     return (
         <section id={styles.manage_content_container}>
-            {/* Кнопка добавления новой статьи */}
-            <ServiceButtons shown="add" onChange={handleChange} />
-            
+            <ServiceButtons shown='add' onChange={handleChange}/>
             <h1>Управление Контентом</h1>
-
             <div className={styles.articles_block}>
-                {articles.map((article) => (
-                    <div key={article.id || article.slug} className={styles.article_block}>
-                        <Link 
-                            to={`/manage/${article.slug}`} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                        >
+                {articles.map((article, index) => (
+                    <div key={index} className={styles.article_block}>
+                        <Link to={`/manage/${article.slug}`} target='_blank' rel='noopener noreferrer'>
                             <img src={article.image} alt={article.title} />
                             <h2>{article.title}</h2>
                         </Link>
-                        
                         <p>{article.except}</p>
-                        
-                        {/* Кнопки управления конкретной статьей */}
-                        <ServiceButtons 
-                            article={article} 
-                            onDelete={handleDelete} 
-                            onChange={handleChange} 
-                        />
+                        <ServiceButtons article={article} onDelete={handleDelete} onChange={handleChange}/>
                     </div>
                 ))}
             </div>
         </section>
-    );
+    )
 }
 
 export default ManageContent;

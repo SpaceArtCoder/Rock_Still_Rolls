@@ -1,24 +1,18 @@
+// src/store/useCommentStore.js (ЧИСТАЯ ВЕРСИЯ - БЕЗ СОХРАНЕНИЯ СКРОЛЛА)
 import { create } from 'zustand';
 import axios from '../utils/axiosConfig';
 
-// Базовый URL API комментариев
 const API_BASE_URL = 'http://localhost:5000/api/comments';
 
-/**
- * Преобразование плоского списка комментариев в древовидную структуру
- * @param {Array} comments - Массив комментариев в плоском формате
- * @returns {Array} Древовидная структура комментариев
- */
+// --- ФУНКЦИЯ УТИЛИТА 1: Преобразование плоского списка в дерево ---
 const buildCommentTree = (comments) => {
     const map = {};
     const tree = [];
 
-    // Создаем карту комментариев
     comments.forEach(comment => {
         map[comment.id] = { ...comment, replies: [] };
     });
 
-    // Строим иерархию комментариев
     comments.forEach(comment => {
         if (comment.parentId) {
             const parentComment = map[comment.parentId];
@@ -30,19 +24,12 @@ const buildCommentTree = (comments) => {
         }
     });
 
-    // Сортируем корневые комментарии по дате создания (новые сверху)
     tree.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     return tree;
 };
 
-/**
- * Рекурсивное обновление комментария в древовидной структуре
- * @param {Array} comments - Массив комментариев
- * @param {string} commentId - ID комментария для обновления
- * @param {Object} updatedData - Новые данные комментария
- * @returns {Array} Обновленный массив комментариев
- */
+// --- ФУНКЦИЯ УТИЛИТА 2: Рекурсивное обновление ---
 const recursiveUpdate = (comments, commentId, updatedData) => {
     return comments.map(c => {
         if (c.id === commentId) {
@@ -61,13 +48,7 @@ const recursiveUpdate = (comments, commentId, updatedData) => {
     });
 };
 
-/**
- * Добавление нового комментария в древовидную структуру
- * @param {Array} comments - Массив комментариев
- * @param {Object} newComment - Новый комментарий
- * @param {string|null} parentId - ID родительского комментария (null для корневых)
- * @returns {Array} Обновленный массив комментариев
- */
+// --- ФУНКЦИЯ УТИЛИТА 3: Добавление комментария в дерево ---
 const addCommentToTree = (comments, newComment, parentId) => {
     if (!parentId) {
         // Корневой комментарий - добавляем в начало списка
@@ -92,12 +73,7 @@ const addCommentToTree = (comments, newComment, parentId) => {
     });
 };
 
-/**
- * Удаление комментария из древовидной структуры
- * @param {Array} comments - Массив комментариев
- * @param {string} commentId - ID комментария для удаления
- * @returns {Array} Обновленный массив комментариев
- */
+// --- ФУНКЦИЯ УТИЛИТА 4: Удаление комментария из дерева ---
 const removeCommentFromTree = (comments, commentId) => {
     return comments.reduce((acc, c) => {
         if (c.id === commentId) {
@@ -115,21 +91,15 @@ const removeCommentFromTree = (comments, commentId) => {
     }, []);
 };
 
-/**
- * Хранилище комментариев на Zustand
- * Управляет загрузкой, добавлением, удалением и обновлением комментариев
- */
-const useCommentStore = create((set, get) => ({
-    // Состояние хранилища
-    comments: [],               // Массив комментариев в древовидной структуре
-    loading: false,             // Флаг загрузки данных
-    error: null,                // Сообщение об ошибке
-    currentArticleSlug: null,   // Slug текущей статьи
 
-    /**
-     * Загрузка комментариев для статьи по slug
-     * @param {string} articleSlug - Slug статьи
-     */
+const useCommentStore = create((set, get) => ({
+    // Состояние
+    comments: [],
+    loading: false,
+    error: null,
+    currentArticleSlug: null,
+
+    // 1. Загрузка комментариев для статьи по slug
     fetchComments: async (articleSlug) => {
         set({ loading: true, error: null, currentArticleSlug: articleSlug });
         try {
@@ -138,20 +108,11 @@ const useCommentStore = create((set, get) => ({
             set({ comments: threadedComments, loading: false });
         } catch (error) {
             console.error("Ошибка при загрузке комментариев:", error);
-            set({ 
-                error: error.response?.data?.error || 'Не удалось загрузить комментарии.', 
-                loading: false 
-            });
+            set({ error: error.response?.data?.error || 'Не удалось загрузить комментарии.', loading: false });
         }
     },
 
-    /**
-     * Добавление нового комментария
-     * @param {string} articleSlug - Slug статьи
-     * @param {string} content - Текст комментария
-     * @param {string|null} parentId - ID родительского комментария (null для корневых)
-     * @returns {Object|null} Добавленный комментарий или null при ошибке
-     */
+    // 2. Добавление комментария (БЕЗ сохранения скролла)
     addComment: async (articleSlug, content, parentId) => {
         try {
             const response = await axios.post(API_BASE_URL, {
@@ -162,7 +123,7 @@ const useCommentStore = create((set, get) => ({
 
             const newComment = response.data;
 
-            // Добавляем комментарий в древовидную структуру
+            // Просто добавляем комментарий в дерево
             set(state => ({
                 comments: addCommentToTree(state.comments, newComment, parentId)
             }));
@@ -182,16 +143,12 @@ const useCommentStore = create((set, get) => ({
         }
     },
 
-    /**
-     * Удаление комментария
-     * @param {string} commentId - ID комментария для удаления
-     * @param {string} articleSlug - Slug статьи (для валидации)
-     */
+    // 3. Удаление комментария (БЕЗ сохранения скролла)
     deleteComment: async (commentId, articleSlug) => {
         try {
             await axios.delete(`${API_BASE_URL}/${commentId}`);
 
-            // Удаляем комментарий из древовидной структуры
+            // Просто удаляем комментарий из дерева
             set(state => ({
                 comments: removeCommentFromTree(state.comments, commentId)
             }));
@@ -202,12 +159,7 @@ const useCommentStore = create((set, get) => ({
         }
     },
 
-    /**
-     * Обновление существующего комментария
-     * @param {string} commentId - ID комментария для обновления
-     * @param {string} content - Новый текст комментария
-     * @returns {Object|null} Обновленный комментарий или null при ошибке
-     */
+    // 4. Обновление комментария
     updateComment: async (commentId, content) => {
         try {
             const response = await axios.put(`${API_BASE_URL}/${commentId}`, { content });
@@ -232,11 +184,7 @@ const useCommentStore = create((set, get) => ({
         }
     },
 
-    /**
-     * Голосование за комментарий (лайк/дизлайк)
-     * @param {string} commentId - ID комментария
-     * @param {string} type - Тип голоса ('like' или 'dislike')
-     */
+    // 5. Голосование
     voteComment: async (commentId, type) => {
         try {
             const response = await axios.post(`${API_BASE_URL}/${commentId}/vote`, { type });
@@ -257,15 +205,8 @@ const useCommentStore = create((set, get) => ({
         }
     },
 
-    /**
-     * Установка сообщения об ошибке
-     * @param {string} message - Текст сообщения об ошибке
-     */
+    // Вспомогательные функции
     setError: (message) => set({ error: message }),
-    
-    /**
-     * Очистка сообщения об ошибке
-     */
     clearError: () => set({ error: null }),
 
 }));

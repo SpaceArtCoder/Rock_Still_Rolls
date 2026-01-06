@@ -1,16 +1,12 @@
 import MyIcon from '../../assets/images/logo.svg';
 import styles from '../Logo/Logo.module.scss';
 
-/**
- * Компонент логотипа сайта.
- * Отображает SVG-изображение логотипа с альтернативным текстом.
- */
 function Logo() {
     return (
         <div className={styles.logo}>
-            <img src={MyIcon} alt='Логотип сайта'/>
+            <img src={MyIcon} alt='Site Logo'/>
         </div>
-    );
+    )
 }
 
 export default Logo;

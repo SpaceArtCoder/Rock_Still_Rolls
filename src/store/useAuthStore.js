@@ -1,67 +1,56 @@
+// src/store/useAuthStore.js (ИСПРАВЛЕНА ОШИБКА С NULL)
 import { create } from 'zustand';
 import axios from 'axios';
 
-// Базовый URL API аутентификации
 const API_BASE_URL = 'http://localhost:5000/api/auth';
 
-// Ключ для синхронизации аутентификации между вкладками браузера
-const AUTH_SYNC_KEY = 'auth_sync_event';
-
-/**
- * Получение начального состояния хранилища
- * @returns {Object} Начальное состояние аутентификации
- */
 const getInitialState = () => {
     return {
-        user: null,              // Данные пользователя
-        isAuthenticated: false,  // Статус аутентификации
-        isLoading: true,         // Флаг загрузки (начинаем с true)
+        user: null,
+        isAuthenticated: false,
+        // isLoading: false,
+        isLoading: true, // ✅ Начинаем с загрузки!
     };
 };
 
-// Настройка axios для отправки cookies при запросах
+// Настройка axios для отправки cookies
 axios.defaults.withCredentials = true;
 
-/**
- * Хранилище аутентификации на Zustand
- * Управляет состоянием пользователя, входом, выходом и синхронизацией между вкладками
- */
+// Ключ для синхронизации между вкладками
+const AUTH_SYNC_KEY = 'auth_sync_event';
+
 const useAuthStore = create((set, get) => ({
     ...getInitialState(),
 
-    /**
-     * Инициализация синхронизации аутентификации между вкладками
-     * Добавляет обработчик событий localStorage для обновления состояния
-     * @returns {Function} Функция очистки обработчика событий
-     */
+    // Инициализация слушателя событий
     initAuthSync: () => {
-        // Обработчик изменений в localStorage
+        // Слушаем изменения в localStorage для синхронизации между вкладками
         const handleStorageChange = (e) => {
             if (e.key === AUTH_SYNC_KEY) {
-                // Проверка на null перед парсингом данных
+                // ИСПРАВЛЕНО: Проверка на null перед парсингом
                 if (!e.newValue) {
+                    // console.log('Storage event без данных, пропускаем');
                     return;
                 }
 
                 try {
                     const eventData = JSON.parse(e.newValue);
 
-                    // Дополнительная проверка структуры данных события
+                    // ДОБАВЛЕНО: Дополнительная проверка структуры данных
                     if (!eventData || !eventData.type) {
                         console.log('Некорректная структура данных события');
                         return;
                     }
 
-                    // Обработка события выхода
                     if (eventData.type === 'logout') {
+                        // Синхронизируем выход
                         set({
                             user: null,
                             isAuthenticated: false,
                             isLoading: false,
                         });
-                    } 
-                    // Обработка события входа
-                    else if (eventData.type === 'login') {
+                    } else if (eventData.type === 'login') {
+                        // Синхронизируем вход
                         get().fetchUser();
                     }
                 } catch (error) {
@@ -70,31 +59,26 @@ const useAuthStore = create((set, get) => ({
             }
         };
 
-        // Добавление обработчика событий
         window.addEventListener('storage', handleStorageChange);
 
-        // Возвращаем функцию очистки обработчика
+        // Возвращаем функцию очистки
         return () => {
             window.removeEventListener('storage', handleStorageChange);
         };
     },
 
-    /**
-     * Отправка события изменения аутентификации для синхронизации между вкладками
-     * @param {string} type - Тип события ('login' или 'logout')
-     */
+    // Отправка события синхронизации
     broadcastAuthChange: (type) => {
         try {
-            // Создание данных события
+            // localStorage события видны только в ДРУГИХ вкладках
             const eventData = JSON.stringify({
                 type,
                 timestamp: Date.now()
             });
 
-            // Запись события в localStorage (видно в других вкладках)
             localStorage.setItem(AUTH_SYNC_KEY, eventData);
 
-            // Очистка события через 100мс для предотвращения захламления
+            // Сразу удаляем, чтобы не захламлять localStorage
             setTimeout(() => {
                 localStorage.removeItem(AUTH_SYNC_KEY);
             }, 100);
@@ -103,10 +87,7 @@ const useAuthStore = create((set, get) => ({
         }
     },
 
-    /**
-     * Загрузка данных пользователя по cookie
-     * Проверяет аутентификацию пользователя через сервер
-     */
+    // Загрузка данных пользователя по cookie
     fetchUser: async () => {
         set({ isLoading: true });
 
@@ -114,7 +95,6 @@ const useAuthStore = create((set, get) => ({
             const response = await axios.get(`${API_BASE_URL}/me`);
             const userData = response.data.user;
 
-            // Обновление состояния при успешной аутентификации
             set({
                 user: userData,
                 isAuthenticated: true,
@@ -122,12 +102,11 @@ const useAuthStore = create((set, get) => ({
             });
 
         } catch (error) {
-            // Не логируем 401 ошибку - это нормально для неавторизованных пользователей
+            // Не логируем 401 - это нормально для неавторизованных
             if (error.response?.status !== 401) {
                 console.error("Ошибка при получении данных пользователя:", error);
             }
 
-            // Сброс состояния при неудачной аутентификации
             set({
                 user: null,
                 isAuthenticated: false,
@@ -136,12 +115,7 @@ const useAuthStore = create((set, get) => ({
         }
     },
 
-    /**
-     * Вход пользователя в систему
-     * @param {string} email - Email пользователя
-     * @param {string} password - Пароль пользователя
-     * @returns {Object} Результат операции входа
-     */
+    // Функция для обработки входа
     login: async (email, password) => {
         try {
             const response = await axios.post(`${API_BASE_URL}/login`, {
@@ -151,13 +125,13 @@ const useAuthStore = create((set, get) => ({
 
             const userData = response.data.user;
 
-            // Обновление состояния при успешном входе
+            // Cookie установлен сервером автоматически
             set({
                 user: userData,
                 isAuthenticated: true,
             });
 
-            // Оповещение других вкладок о входе
+            // Оповещаем другие вкладки о входе
             get().broadcastAuthChange('login');
 
             return { success: true, user: userData };
@@ -171,11 +145,7 @@ const useAuthStore = create((set, get) => ({
         }
     },
 
-    /**
-     * Регистрация нового пользователя
-     * @param {FormData} formData - Данные формы регистрации
-     * @returns {Object} Результат операции регистрации
-     */
+    // Функция для обработки регистрации
     register: async (formData) => {
         try {
             const response = await axios.post(`${API_BASE_URL}/register`, formData, {
@@ -186,7 +156,7 @@ const useAuthStore = create((set, get) => ({
 
             const userData = response.data.user;
 
-            // Возвращаем данные пользователя без автоматической авторизации
+            // Возвращаем только данные пользователя без авторизации
             return { success: true, user: userData, requireLogin: true };
 
         } catch (error) {
@@ -198,23 +168,18 @@ const useAuthStore = create((set, get) => ({
         }
     },
 
-    /**
-     * Выход пользователя из системы
-     * @returns {Object} Результат операции выхода
-     */
+    // Функция выхода
     logout: async () => {
         try {
-            // Отправка запроса на выход
             await axios.post(`${API_BASE_URL}/logout`);
 
-            // Очистка локального состояния
             set({
                 user: null,
                 isAuthenticated: false,
                 isLoading: false,
             });
 
-            // Оповещение других вкладок о выходе
+            // Оповещаем другие вкладки о выходе
             get().broadcastAuthChange('logout');
 
             return { success: true };
@@ -222,7 +187,7 @@ const useAuthStore = create((set, get) => ({
         } catch (error) {
             console.error("Ошибка при выходе:", error);
 
-            // Очистка состояния даже при ошибке запроса
+            // Даже если запрос не прошел, очищаем локальное состояние
             set({
                 user: null,
                 isAuthenticated: false,
@@ -236,10 +201,7 @@ const useAuthStore = create((set, get) => ({
         }
     },
 
-    /**
-     * Ручная установка данных пользователя
-     * @param {Object} user - Объект с данными пользователя
-     */
+    // Функция для установки данных пользователя (если нужно)
     setUser: (user) => {
         const userData = {
             id: user.id,

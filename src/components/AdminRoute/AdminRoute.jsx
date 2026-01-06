@@ -1,43 +1,38 @@
+// src/components/AdminRoute/AdminRoute.jsx (ИСПРАВЛЕННЫЙ)
 import { Navigate } from 'react-router-dom';
 import useAuthStore from '../../store/useAuthStore';
 
-/**
- * Компонент высшего порядка для защиты административных маршрутов.
- * @param {Object} props
- * @param {ReactNode} props.children - Компонент, доступ к которому нужно защитить.
- */
 const AdminRoute = ({ children }) => {
   const { isAuthenticated, user, isLoading } = useAuthStore();
 
-  // 1. Состояние ожидания (предотвращает мигание редиректа при инициализации)
+  // ИСПРАВЛЕНИЕ #1: Показываем загрузку пока идет fetchUser()
   if (isLoading) {
     return (
         <div style={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          minHeight: '60vh',
-          fontFamily: 'sans-serif'
+          minHeight: '60vh'
         }}>
           <div>Проверка прав доступа...</div>
         </div>
     );
   }
 
-  // 2. Проверка наличия авторизации
+  // ИСПРАВЛЕНИЕ #2: Проверяем авторизацию только ПОСЛЕ загрузки
   if (!isAuthenticated || !user) {
-    console.warn('AdminRoute: Доступ запрещен. Пользователь не авторизован.');
+    console.log('AdminRoute: не авторизован, редирект на главную');
     return <Navigate to="/" replace />;
   }
 
-  // 3. Проверка прав администратора
+  // ИСПРАВЛЕНИЕ #3: Проверяем права админа
   if (!user.isAdmin) {
-    console.warn(`AdminRoute: Доступ запрещен. Пользователь ${user.name} не является админом.`);
+    console.log('AdminRoute: не админ, редирект на главную');
     return <Navigate to="/" replace />;
   }
 
-  // 4. Доступ разрешен
-  console.log(`AdminRoute: Доступ разрешен для администратора: ${user.name}`);
+  // ИСПРАВЛЕНИЕ #4: Логируем успешный доступ для отладки
+  console.log('AdminRoute: доступ разрешен для', user.name);
 
   return children;
 };

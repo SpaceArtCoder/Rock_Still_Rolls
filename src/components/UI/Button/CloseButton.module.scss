@@ -1,38 +1,37 @@
 .closeButton_block {
   display: flex;
-  justify-content: flex-end; // Выравнивание кнопки по правому краю
-  
+  justify-content: end;
   .closeButton {
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    border: none;
-    border-radius: 6px;
-    background-color: transparent;
-    color: #f3f4f6;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  z-index: 1;
+  // position: relative;
+  // top: 3rem;
+  // left: 86.5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background-color: transparent;
+  color: #f3f4f6;
+  cursor: pointer;
+  transition: all 0.2s ease;
 
-    // Эффект при наведении
-    &:hover {
-      background-color: #f3f4f6;
-      color: #374151;
-    }
-
-    // Эффект при нажатии
-    &:active {
-      background-color: #e5e7eb;
-      transform: scale(0.95);
-    }
-
-    // Стили для иконки крестика
-    svg {
-      width: 20px;
-      height: 20px;
-    }
+  &:hover {
+    background-color: #f3f4f6;
+    color: #374151;
   }
+
+  &:active {
+    background-color: #e5e7eb;
+    transform: scale(0.95);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
 }

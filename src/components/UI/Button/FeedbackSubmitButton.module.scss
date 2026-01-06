@@ -1,57 +1,58 @@
-/* --- Базовые стили кнопки --- */
+/* --- Base Button Styling --- */
 .material_button {
-    /* Размеры и внешний вид */
+    /* Dimensions and Appearance */
     padding: 10px 24px;
     margin-top: 1rem;
     border: none;
-    border-radius: 4px; /* Легкое скругление углов */
+    border-radius: 4px; /* Slight rounding */
     cursor: pointer;
-    text-transform: uppercase; /* Кнопки в Material Design часто в верхнем регистре */
+    text-transform: uppercase; /* Material buttons are often uppercase */
     font-weight: 500;
     letter-spacing: 0.5px;
     font-size: 14px;
-    outline: none; /* Убираем стандартный фокус */
+    outline: none; /* Removed default focus outline */
     
-    /* Цвета (стиль основной кнопки Material Design) */
-    background-color: #f7d80c8f; /* Основной цвет - полупрозрачный золотистый */
+    /* Colors (Primary/Filled Button Style) */
+    background-color: #f7d80c8f; /* Material Primary Purple */
     color: #ffffff;
     
-    /* Тень (элевация) - имитация тени уровня 2dp */
+    /* Elevation (Shadow) - Mimics the 'resting' elevation of 2dp */
     box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
                 0 2px 2px 0 rgba(0, 0, 0, 0.14),
                 0 1px 5px 0 rgba(0, 0, 0, 0.12);
     
-    /* Плавные переходы для состояний */
+    /* Smooth Transitions for Hover/Focus/Active */
     transition: background-color 0.3s, box-shadow 0.3s, opacity 0.3s, transform 0.1s;
 }
 
-/* --- Состояние при наведении (немного темнее, уровень элевации 4dp) --- */
+/* --- Hover State (Slightly darker color, higher elevation 4dp) --- */
 .material_button:hover {
-    background-color: #f7d80cc6; /* Чуть светлее для визуальной обратной связи */
+    background-color: #f7d80cc6; /* Slightly lighter for visual feedback */
     box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2),
                 0 4px 5px 0 rgba(0, 0, 0, 0.14),
                 0 1px 10px 0 rgba(0, 0, 0, 0.12);
 }
 
-/* --- Состояние нажатия (самый высокий уровень элевации 8dp) --- */
+/* --- Active/Pressed State (Highest elevation 8dp) --- */
 .material_button:active {
-    transform: translateY(1px); /* Эффект нажатия */
-    background-color: #f7d80c68; /* Темнее при нажатии */
+    /* No shadow change on press (often done with Ripple effect in MD, but we'll stick to basic CSS) */
+    transform: translateY(1px); /* Simple push-down effect */
+    background-color: #f7d80c68; /* Darker purple on press */
     box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
                 0 8px 10px 1px rgba(0, 0, 0, 0.14),
                 0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
-/* --- Состояние фокуса (для доступности) --- */
+/* --- Focus State (Accessibility) --- */
 .material_button:focus {
-    /* Видимая подсветка фокуса */
-    box-shadow: 0 0 0 3px lab(74.55% -4.94 76.22 / 0.837); /* Свечение основного цвета */
+    /* A visible ring or focus style */
+    box-shadow: 0 0 0 3px lab(74.55% -4.94 76.22 / 0.837); /* Primary color glow */
 }
 
-/* --- Отключенное состояние --- */
+/* --- Disabled State --- */
 .material_button:disabled {
     cursor: not-allowed;
-    /* Приглушенные цвета и отсутствие тени */
+    /* Dims the color and removes shadow */
     background-color: #e0e0e0; 
     color: #a0a0a0;
     box-shadow: none; 

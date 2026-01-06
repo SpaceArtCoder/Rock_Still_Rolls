@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import Categories from '../../UI/Categories/Categories.jsx';
+import { usePathname } from 'next/navigation';
+import Categories from '@/components/Categories/Categories';
 import styles from './HamburgerMenuField.module.scss';
 
+interface HamburgerMenuField {
+    visibility: boolean,
+}
 
-function HamburgerMenuField({visibility}) {
+function HamburgerMenuField({visibility} : HamburgerMenuField) {
     // const [isOpen, setIsOpen] = useState(visibility);
     // const location = useLocation();
 

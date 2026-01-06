@@ -1,3 +1,35 @@
+//@use '../../assets/styles/abstracts/mixins' as mixins;
+//
+//.logo {
+//    img {
+//      width: 5.5rem;
+//
+//      @include mixins.img(375px) {
+//        width: 4.5rem;
+//      }
+//    }
+//}
+//
+//
+//.logo.react:hover {
+//  filter: drop-shadow(0 0 2em #61dafbaa);
+//}
+//
+//@keyframes logo-spin {
+//  from {
+//    transform: rotate(0deg);
+//  }
+//  to {
+//    transform: rotate(360deg);
+//  }
+//}
+//
+//@media (prefers-reduced-motion: no-preference) {
+//  a:nth-of-type(2) .logo {
+//    animation: logo-spin infinite 20s linear;
+//  }
+//}
+
 @use '../../assets/styles/abstracts/mixins' as mixins;
 
 .logo {
@@ -13,8 +45,9 @@
   }
 }
 
-/* Эффект кручения */
+/* Эффект свечения */
 .logo:hover {
+  //filter: drop-shadow(0 0 2em #61dafbaa);
   animation: logo-spin infinite 20s linear;
 }
 

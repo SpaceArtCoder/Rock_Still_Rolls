@@ -3,26 +3,19 @@ import { useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import { parseVideoShortcodes } from '../../../utils/videoParser';
+import { parseVideoShortcodes } from '../../../utils/videoParser'; // НОВЫЙ ИМПОРТ
 import CommentSection from '../../CommentSection/CommentSection';
-import useAuthStore from '../../../store/useAuthStore';
+import useAuthStore from '../../../store/useAuthStore'; // НОВЫЙ ИМПОРТ
 import styles from './ArticlePage.module.scss';
 
-/**
- * Компонент страницы статьи.
- * Отображает полное содержание статьи с поддержкой Markdown и шорткодов видео.
- */
 const ArticlePage = () => {
     const { slug } = useParams(); 
-    const { isLoading: isAuthLoading } = useAuthStore();
+    const { isLoading: isAuthLoading } = useAuthStore(); // ПОЛУЧАЕМ ФЛАГ ЗАГРУЗКИ
     const [article, setArticle] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const decodedSlug = decodeURIComponent(slug);
 
-    /**
-     * Эффект для загрузки данных статьи при монтировании компонента.
-     */
     useEffect(() => {
         const fetchArticle = async () => {
             try {
@@ -44,16 +37,10 @@ const ArticlePage = () => {
         fetchArticle();
     }, [decodedSlug]);
 
-    // Отображение индикатора загрузки
     if (loading || isAuthLoading) return <div className={styles.loading}>Загрузка статьи...</div>;
-    
-    // Отображение ошибки загрузки
     if (error) return <div className={styles.error}>Ошибка: {error}</div>;
-    
-    // Отображение сообщения об отсутствии статьи
     if (!article) return <div className={styles.notFound}>Статья не найдена.</div>;
 
-    // Форматирование даты и времени публикации
     const dateTimeOptions = { 
         year: 'numeric', 
         month: 'numeric', 
@@ -62,15 +49,13 @@ const ArticlePage = () => {
         minute: '2-digit',
     };
 
-    // Обработка шорткодов видео в содержимом статьи
+    // НОВОЕ: Обрабатываем шорткоды видео перед рендерингом
     const processedContent = parseVideoShortcodes(article.content);
 
     return (
         <div className={styles.article_block}>
-            {/* Заголовок статьи */}
             <h1>{article.title}</h1>
             
-            {/* Главное изображение статьи */}
             {article.image && (
                 <img 
                     src={`http://localhost:5000${article.image}`} 
@@ -79,14 +64,12 @@ const ArticlePage = () => {
                 />
             )}
             
-            {/* Дата и время публикации */}
             <p className={styles.pub_date}>
                 Опубликовано: {article.createdAt
                 ? new Date(article.createdAt).toLocaleString(undefined, dateTimeOptions)
                  : 'Дата не указана'} 
             </p>
             
-            {/* Содержимое статьи с поддержкой Markdown */}
             <div className={`${styles.article_content} article-content`}>
                 <ReactMarkdown
                     children={processedContent}
@@ -95,7 +78,7 @@ const ArticlePage = () => {
                 />
             </div>
 
-            {/* Секция комментариев */}
+            {/* НОВАЯ СЕКЦИЯ КОММЕНТАРИЕВ */}
             <CommentSection articleSlug={slug} />
         </div>
     );
