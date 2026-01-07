@@ -1,8 +1,14 @@
-// src/components/Toast/Toast.jsx
 import { useEffect } from 'react';
 import styles from './Toast.module.scss';
 
+/**
+ * Компонент тоста (уведомления) с поддержкой различных типов сообщений.
+ * Автоматически закрывается через заданное время.
+ */
 const Toast = ({ message, type = 'error', duration = 4000, onClose }) => {
+  /**
+   * Эффект для автоматического закрытия тоста через заданное время.
+   */
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
@@ -13,6 +19,7 @@ const Toast = ({ message, type = 'error', duration = 4000, onClose }) => {
 
   return (
     <div className={`${styles.toast} ${styles[type]}`}>
+      {/* Иконка в зависимости от типа тоста */}
       <div className={styles.icon}>
         {type === 'error' && (
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -33,16 +40,19 @@ const Toast = ({ message, type = 'error', duration = 4000, onClose }) => {
         )}
       </div>
       
+      {/* Содержимое тоста с текстом сообщения */}
       <div className={styles.content}>
         <p className={styles.message}>{message}</p>
       </div>
 
+      {/* Кнопка ручного закрытия тоста */}
       <button className={styles.closeButton} onClick={onClose}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path d="M6 18L18 6M6 6l12 12" strokeWidth="2" strokeLinecap="round"/>
         </svg>
       </button>
 
+      {/* Прогресс-бар для визуализации времени жизни тоста */}
       <div className={styles.progressBar}>
         <div 
           className={styles.progress} 

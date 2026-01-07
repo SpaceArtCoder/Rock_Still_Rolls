@@ -1,5 +1,6 @@
 @use '../../assets/styles/abstracts/mixins' as mixins;
 
+/* Базовые стили для кнопки меню */
 .menu_toggle,
 .menu_toggle_open {
   width: 32px;
@@ -10,15 +11,17 @@
   padding: 0;
   color: var(--color);
   display: none;
+
+  /* Отображение на мобильных устройствах */
   @include mixins.max-width(sm) {
     display: flex;
     z-index: 2;
     position: relative;
     left: 0.5rem;
   }
-
 }
 
+/* Стили для закрытого состояния кнопки меню */
 .menu_toggle {
   .line_top {
     transform-origin: 16px 9.25px;
@@ -38,6 +41,7 @@
   }
 }
 
+/* Стили для открытого состояния кнопки меню */
 .menu_toggle_open {
   .line_top {
     transform-origin: 16px 9.25px;

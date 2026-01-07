@@ -4,11 +4,13 @@ import useAuthStore from '../../store/useAuthStore';
 import { Link } from 'react-router-dom';
 import styles from './IOSThreeStateToggle.module.scss';
 
+/**
+ * Интеллектуальный переключатель авторизации в стиле iOS.
+ * Управляет входом, регистрацией и быстрым доступом к профилю/админке.
+ */
 const IOSThreeStateToggle = ({ onStateChange }) => {
-  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
-  const user = useAuthStore(state => state.user);
-  const isLoading = useAuthStore(state => state.isLoading);
-  const logout = useAuthStore(state => state.logout);
+  // Подписка на Zustand store
+  const { isAuthenticated, user, isLoading, logout } = useAuthStore();
 
   const [activeState, setActiveState] = useState('login');
   const [isExpanded, setIsExpanded] = useState(false);
@@ -17,27 +19,7 @@ const IOSThreeStateToggle = ({ onStateChange }) => {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const containerRef = useRef(null);
 
-
-  const handleStateChange = (state) => {
-    setActiveState(state);
-    setIsExpanded(false);
-    setIsOpen(true);
-    if (onStateChange) {
-      onStateChange(state);
-    }
-  };
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-  };
-
-  // ИСПРАВЛЕННАЯ функция выхода с async/await
-  const handleLogout = async () => {
-    await logout(); // ВАЖНО: await для корректного выхода
-    setIsProfileMenuOpen(false);
-  };
-
-  // Закрытие при клике вне компонента
+  // Обработка клика вне компонента для закрытия меню/тумблера
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
@@ -45,156 +27,128 @@ const IOSThreeStateToggle = ({ onStateChange }) => {
         setIsProfileMenuOpen(false);
       }
     };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-    if (isExpanded || isProfileMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isExpanded, isProfileMenuOpen]);
-
-
-  // Функция успешной регистрации
-  const handleRegistrationSuccess = (userName) => {
-      setRegistrationSuccessName(userName);
-      setActiveState('login');
+  const handleStateChange = (state) => {
+    setActiveState(state);
+    setIsExpanded(false);
+    setIsOpen(true);
+    if (onStateChange) onStateChange(state);
   };
 
-  // ИСПРАВЛЕННАЯ функция успешного входа (теперь не принимает token)
-  const handleAuthSuccess = () => {
-     
-      
-      setIsOpen(false); // Закрываем модалку
-      setRegistrationSuccessName(null); // Сбрасываем уведомление
+  const handleLogout = async () => {
+    await logout();
+    setIsProfileMenuOpen(false);
   };
 
-  
-  // Отображение заглушки во время загрузки
+  // Состояние загрузки (защита от "прыжков" интерфейса)
   if (isLoading) {
-      return (
-        <div className={styles.loadingWrapper}>
-          <div className={styles.loadingSpinner}></div>
-        </div>
-      ); 
+    return (
+      <div className={styles.loadingWrapper}>
+        <div className={styles.loadingSpinner}></div>
+      </div>
+    );
   }
 
-
-  // Если пользователь авторизован, показываем аватарку и выпадающее меню
-  if (isAuthenticated && user) { // ДОБАВЛЕНО: && user для дополнительной проверки
+  // --- РЕЖИМ 1: ПОЛЬЗОВАТЕЛЬ АВТОРИЗОВАН ---
+  if (isAuthenticated && user) {
     return (
       <div ref={containerRef} className={styles.wrapper}>
         <button 
-            className={styles.iconButton} 
-            onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} 
+          className={styles.avatarButton} 
+          onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
         >
-          {/* Аватарка или иконка по умолчанию */}
-          {user?.avatarUrl ? (
+          {user.avatarUrl ? (
             <img 
-                src={`https://uncramped-robbin-patrimonial.ngrok-free.dev${user.avatarUrl}`} // ИСПРАВЛЕНО: добавлен полный URL
-                alt={user.name || 'User'} 
-                className={styles.avatar} 
+              src={`http://localhost:5000${user.avatarUrl}`} 
+              alt="Avatar" 
+              className={styles.avatar} 
             />
           ) : (
-            // Иконка по умолчанию
-            <svg className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
+            <div className={styles.defaultAvatar}>
+               {user.name?.charAt(0).toUpperCase()}
+            </div>
           )}
         </button>
         
-        {/* Выпадающее меню профиля */}
         {isProfileMenuOpen && (
-            <div className={styles.profileDropdown}>
-                
-                <div className={styles.userInfo}>
-                    <span className={styles.userName}>{user.name}</span>
-                    <span className={styles.userEmail}>{user.email}</span>
-                </div>
-                
-                {/* УСЛОВНЫЙ РЕНДЕРИНГ ССЫЛКИ */}
-                {user && user.isAdmin ? (
-                    <Link 
-                        to="/manage"
-                        onClick={() => setIsProfileMenuOpen(false)} 
-                        className={styles.profileLink}
-                    >
-                        Панель администратора
-                    </Link>
-                ) : (
-                    <Link 
-                        to="/profile"
-                        onClick={() => setIsProfileMenuOpen(false)} 
-                        className={styles.profileLink}
-                    >
-                        Мой профиль
-                    </Link>
-                )}
-                
-                {/* Кнопка "Выйти" */}
-                <button 
-                    className={`${styles.dropdownItem} ${styles.logoutButton}`}
-                    onClick={handleLogout}
-                >
-                    Выйти
-                </button>
+          <div className={styles.profileDropdown}>
+            <div className={styles.userInfo}>
+              <p className={styles.userName}>{user.name}</p>
+              <p className={styles.userEmail}>{user.email}</p>
             </div>
+            <div className={styles.divider} />
+            
+            <Link 
+              to={user.isAdmin ? "/manage" : "/profile"} 
+              className={styles.profileLink}
+              onClick={() => setIsProfileMenuOpen(false)}
+            >
+              {user.isAdmin ? "🛠️ Админ-панель" : "👤 Мой профиль"}
+            </Link>
+
+            <button className={styles.logoutButton} onClick={handleLogout}>
+              Выйти
+            </button>
+          </div>
         )}
       </div>
     );
   }
 
-  // Неавторизованный пользователь - показываем тумблер
+  // --- РЕЖИМ 2: ГОСТЬ ---
   return (
     <>
       <div ref={containerRef} className={styles.wrapper}>
         <div className={`${styles.toggleContainer} ${isExpanded ? styles.expanded : styles.collapsed}`}>
           {!isExpanded ? (
-            // Свернутое состояние - только иконка
-            <button className={styles.iconButton} onClick={toggleExpand}>
-              <svg className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            <button className={styles.iconButton} onClick={() => setIsExpanded(true)}>
+              <svg className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </button>
           ) : (
-            // Развернутое состояние - три кнопки
-            <>
+            <div className={styles.buttonsWrapper}>
               <div className={`${styles.activeBackground} ${styles[activeState]}`} />
-              <div className={styles.buttonsWrapper}>
-                <button
-                  onClick={() => handleStateChange('login')}
-                  className={`${styles.toggleButton} ${activeState === 'login' ? styles.active : ''}`}
-                >
-                  Вход
-                </button>
-                <button
-                  onClick={() => handleStateChange('register')}
-                  className={`${styles.toggleButton} ${activeState === 'register' ? styles.active : ''}`}
-                >
-                  Регистрация
-                </button>
-              </div>
-            </>
+              <button 
+                onClick={() => handleStateChange('login')}
+                className={`${styles.toggleButton} ${activeState === 'login' ? styles.active : ''}`}
+              >
+                Вход
+              </button>
+              <button 
+                onClick={() => handleStateChange('register')}
+                className={`${styles.toggleButton} ${activeState === 'register' ? styles.active : ''}`}
+              >
+                Регистрация
+              </button>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Модальное окно уведомления об успешной регистрации */}
+      {/* Уведомление о регистрации */}
       {registrationSuccessName && (
-          <div className={styles.notificationModal}>
-              <p>Поздравляем, <strong>{registrationSuccessName}</strong>!</p>
-              <p>Ваш аккаунт создан. Пожалуйста, войдите, используя свои данные.</p>
-              <button onClick={() => setRegistrationSuccessName(null)}>Закрыть</button>
+        <div className={styles.notificationOverlay}>
+          <div className={styles.notificationCard}>
+            <h3>Успешно!</h3>
+            <p><strong>{registrationSuccessName}</strong>, аккаунт создан. Теперь вы можете войти.</p>
+            <button onClick={() => setRegistrationSuccessName(null)}>Понятно</button>
           </div>
+        </div>
       )}
 
       <AuthModal 
-          onClose={() => setIsOpen(false)} 
-          isOpen={isOpen} 
-          initialMode={activeState} 
-          onAuthSuccess={handleAuthSuccess}
-          onRegistrationSuccess={handleRegistrationSuccess}
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        initialMode={activeState}
+        onAuthSuccess={() => setIsOpen(false)}
+        onRegistrationSuccess={(name) => {
+          setRegistrationSuccessName(name);
+          setActiveState('login');
+        }}
       />
     </>
   );

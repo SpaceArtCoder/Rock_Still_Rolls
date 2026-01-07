@@ -15,14 +15,20 @@
     -webkit-backdrop-filter: blur(20px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+    /* Адаптивность для мобильных устройств */
     @include mixins.max-width(sm) {
         justify-content: space-between;
         align-items: center;
     }
+
+    /* Контейнер для логотипа */
     .logo {
         position: relative;
         left: 2.7rem;
     }
+
+    /* Блок действий пользователя (кнопки, уведомления, авторизация) */
     .actions {
         margin-right: 1rem;
         display: flex;
@@ -30,6 +36,3 @@
         gap: 0.5rem;
     }
 }
-
-
-

@@ -8,10 +8,10 @@
     -webkit-backdrop-filter: blur(20px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    display: none;
+    display: none; // По умолчанию скрыто
 }
 
+/* Класс для отображения меню */
 .show {
-    display: flex;
-    
+    display: flex; // Показываем меню при добавлении класса
 }

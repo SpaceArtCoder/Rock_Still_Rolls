@@ -10,11 +10,13 @@
   gap: 12px;
   pointer-events: none;
 
+  /* Адаптивность для мобильных устройств */
   @media (max-width: 768px) {
     left: 20px;
     right: 20px;
   }
 
+  /* Включаем события мыши для дочерних элементов */
   > * {
     pointer-events: auto;
   }

@@ -1,3 +1,6 @@
+/* Стили для компонента VideoInsertModal */
+
+/* Затемненный фон модального окна */
 .overlay {
   position: fixed;
   top: 0;
@@ -13,6 +16,7 @@
   animation: fadeIn 0.2s ease-out;
 }
 
+/* Анимация появления фона */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -22,6 +26,7 @@
   }
 }
 
+/* Модальное окно */
 .modal {
   background: var(--background-color);
   border-radius: 16px;
@@ -35,6 +40,7 @@
   animation: slideUp 0.3s ease-out;
 }
 
+/* Анимация появления модального окна */
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -46,6 +52,7 @@
   }
 }
 
+/* Кнопка закрытия */
 .closeButton {
   position: absolute;
   top: 1rem;
@@ -74,11 +81,13 @@
   }
 }
 
+/* Заголовок формы */
 .header {
   margin-bottom: 1.5rem;
   padding-right: 2rem;
 }
 
+/* Основной заголовок */
 .title {
   font-size: 1.5rem;
   font-weight: 700;
@@ -86,30 +95,35 @@
   margin-bottom: 0.5rem;
 }
 
+/* Подзаголовок */
 .subtitle {
   font-size: 0.9rem;
   color: var(--color);
   opacity: 0.7;
 }
 
+/* Основное содержимое формы */
 .content {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
 
+/* Группа полей ввода */
 .inputGroup {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
+/* Метка поля */
 .label {
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--color);
 }
 
+/* Поле ввода */
 .input {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -132,6 +146,7 @@
   }
 }
 
+/* Подсказка под полем */
 .hint {
   font-size: 0.85rem;
   color: var(--color);
@@ -139,6 +154,7 @@
   margin: 0;
 }
 
+/* Список примеров URL */
 .exampleList {
   font-size: 0.85rem;
   color: var(--color);
@@ -151,6 +167,7 @@
   }
 }
 
+/* Бейдж платформы */
 .platformBadge {
   display: inline-block;
   padding: 0.5rem 1rem;
@@ -163,6 +180,7 @@
   animation: slideDown 0.3s ease-out;
 }
 
+/* Анимация появления бейджа платформы */
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -174,12 +192,14 @@
   }
 }
 
+/* Группа радиокнопок */
 .radioGroup {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
+/* Метка радиокнопки */
 .radioLabel {
   display: flex;
   align-items: center;
@@ -215,6 +235,7 @@
   }
 }
 
+/* Сообщение об ошибке */
 .error {
   padding: 0.75rem 1rem;
   background: rgba(239, 68, 68, 0.1);
@@ -224,12 +245,14 @@
   animation: shake 0.3s;
 }
 
+/* Анимация встряхивания при ошибке */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
   75% { transform: translateX(5px); }
 }
 
+/* Блок предварительного просмотра */
 .preview {
   padding: 1rem;
   background: var(--hover-link-background-color);
@@ -237,6 +260,7 @@
   border-left: 3px solid var(--hover-link-color);
 }
 
+/* Метка предварительного просмотра */
 .previewLabel {
   font-size: 0.85rem;
   color: var(--color);
@@ -244,6 +268,7 @@
   margin-bottom: 0.5rem;
 }
 
+/* Код для предварительного просмотра */
 .previewCode {
   display: block;
   padding: 0.75rem;
@@ -257,6 +282,7 @@
   word-break: break-all;
 }
 
+/* Контейнер для кнопок действий */
 .actions {
   display: flex;
   gap: 1rem;
@@ -264,6 +290,7 @@
   justify-content: flex-end;
 }
 
+/* Общие стили для кнопок */
 .cancelButton,
 .insertButton {
   padding: 0.75rem 1.5rem;
@@ -275,6 +302,7 @@
   transition: all 0.2s;
 }
 
+/* Кнопка отмены */
 .cancelButton {
   background: var(--hover-link-background-color);
   color: var(--color);
@@ -285,6 +313,7 @@
   }
 }
 
+/* Кнопка вставки */
 .insertButton {
   background: var(--hover-link-color);
   color: var(--background-color);
@@ -300,7 +329,7 @@
   }
 }
 
-/* Адаптивность */
+/* Адаптивность для мобильных устройств */
 @media (max-width: 640px) {
   .modal {
     padding: 1.5rem;

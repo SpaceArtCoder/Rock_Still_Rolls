@@ -2,6 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './SearchButton.module.scss';
 
+/**
+ * Компонент кнопки поиска с выпадающей панелью.
+ * Осуществляет поиск статей по введенному запросу с подсветкой результатов.
+ */
 const SearchButton = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -11,6 +15,10 @@ const SearchButton = () => {
     const inputRef = useRef(null);
     const navigate = useNavigate();
 
+    /**
+     * Эффект для закрытия панели поиска при клике вне компонента.
+     * Фокусирует поле ввода при открытии панели.
+     */
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -28,6 +36,9 @@ const SearchButton = () => {
         };
     }, [isOpen]);
 
+    /**
+     * Эффект для закрытия панели поиска при нажатии клавиши Escape.
+     */
     useEffect(() => {
         const handleEscape = (e) => {
             if (e.key === 'Escape' && isOpen) {
@@ -39,6 +50,10 @@ const SearchButton = () => {
         return () => document.removeEventListener('keydown', handleEscape);
     }, [isOpen]);
 
+    /**
+     * Эффект для выполнения поиска с задержкой (debounce).
+     * Очищает результаты при пустом запросе.
+     */
     useEffect(() => {
         if (!searchQuery.trim()) {
             setSearchResults([]);
@@ -52,26 +67,33 @@ const SearchButton = () => {
         return () => clearTimeout(timeoutId);
     }, [searchQuery]);
 
+    /**
+     * Выполняет поиск статей по API.
+     * @param {string} query - Поисковый запрос
+     */
     const performSearch = async (query) => {
         setIsLoading(true);
         try {
             const response = await fetch(
-                `https://uncramped-robbin-patrimonial.ngrok-free.dev/api/articles/search?q=${encodeURIComponent(query)}`
+                `http://localhost:5000/api/articles/search?q=${encodeURIComponent(query)}`
             );
             const data = await response.json();
             setSearchResults(data);
         } catch (error) {
-            console.error('Search error:', error);
+            console.error('Ошибка поиска:', error);
             setSearchResults([]);
         } finally {
             setIsLoading(false);
         }
     };
 
-    // ОБНОВЛЕННАЯ ФУНКЦИЯ
+    /**
+     * Обрабатывает клик по результату поиска.
+     * Определяет маршрут на основе категории статьи и выполняет переход.
+     * @param {Object} article - Объект статьи
+     */
     const handleResultClick = (article) => {
-        // Определяем маршрут на основе категории
-        let path = '/news/'; // По умолчанию
+        let path = '/news/';
         
         if (article.categories && article.categories.length > 0) {
             const primaryCategory = article.categories[0];
@@ -91,6 +113,10 @@ const SearchButton = () => {
         setSearchResults([]);
     };
 
+    /**
+     * Переключает состояние панели поиска.
+     * Очищает результаты при закрытии.
+     */
     const toggleSearch = () => {
         setIsOpen(!isOpen);
         if (!isOpen) {
@@ -99,6 +125,12 @@ const SearchButton = () => {
         }
     };
 
+    /**
+     * Подсвечивает текст в соответствии с поисковым запросом.
+     * @param {string} text - Исходный текст
+     * @param {string} query - Поисковый запрос
+     * @returns {Array|string} - Массив JSX элементов или исходный текст
+     */
     const highlightText = (text, query) => {
         if (!query.trim() || !text) return text;
         
@@ -112,6 +144,7 @@ const SearchButton = () => {
 
     return (
         <div ref={searchRef} className={styles.searchContainer}>
+            {/* Кнопка открытия/закрытия поиска */}
             <button 
                 className={`${styles.searchButton} ${isOpen ? styles.active : ''}`}
                 onClick={toggleSearch}
@@ -131,6 +164,7 @@ const SearchButton = () => {
                 </svg>
             </button>
 
+            {/* Панель поиска с полем ввода и результатами */}
             <div className={`${styles.searchPanel} ${isOpen ? styles.open : ''}`}>
                 <div className={styles.inputWrapper}>
                     <svg 
@@ -151,6 +185,7 @@ const SearchButton = () => {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
+                    {/* Кнопка очистки поля ввода */}
                     {searchQuery && (
                         <button
                             className={styles.clearButton}
@@ -162,13 +197,16 @@ const SearchButton = () => {
                     )}
                 </div>
 
+                {/* Контейнер с результатами поиска */}
                 <div className={styles.resultsContainer}>
                     {isLoading ? (
+                        // Индикатор загрузки
                         <div className={styles.loading}>
                             <div className={styles.spinner}></div>
                             Поиск...
                         </div>
                     ) : searchQuery.trim() && searchResults.length === 0 ? (
+                        // Сообщение об отсутствии результатов
                         <div className={styles.noResults}>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <circle cx="12" cy="12" r="10" />
@@ -177,6 +215,7 @@ const SearchButton = () => {
                             <p>Ничего не найдено</p>
                         </div>
                     ) : searchResults.length > 0 ? (
+                        // Список найденных статей
                         <ul className={styles.resultsList}>
                             {searchResults.map((article) => (
                                 <li
@@ -184,6 +223,7 @@ const SearchButton = () => {
                                     className={styles.resultItem}
                                     onClick={() => handleResultClick(article)}
                                 >
+                                    {/* Изображение статьи */}
                                     {article.image && (
                                         <img
                                             src={`http://localhost:5000${article.image}`}
@@ -192,9 +232,11 @@ const SearchButton = () => {
                                         />
                                     )}
                                     <div className={styles.resultContent}>
+                                        {/* Заголовок статьи с подсветкой */}
                                         <h3 className={styles.resultTitle}>
                                             {highlightText(article.title, searchQuery)}
                                         </h3>
+                                        {/* Краткое описание статьи с подсветкой */}
                                         {article.excerpt && (
                                             <p className={styles.resultExcerpt}>
                                                 {highlightText(
@@ -203,6 +245,7 @@ const SearchButton = () => {
                                                 )}
                                             </p>
                                         )}
+                                        {/* Дата публикации */}
                                         <span className={styles.resultDate}>
                                             {new Date(article.createdAt).toLocaleDateString('ru-RU')}
                                         </span>
@@ -213,6 +256,7 @@ const SearchButton = () => {
                     ) : null}
                 </div>
 
+                {/* Подсказка при пустом поле поиска */}
                 {!searchQuery && (
                     <div className={styles.hint}>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

@@ -13,9 +13,8 @@
   }
 }
 
-/* Эффект свечения */
+/* Эффект кручения */
 .logo:hover {
-  //filter: drop-shadow(0 0 2em #61dafbaa);
   animation: logo-spin infinite 20s linear;
 }
 

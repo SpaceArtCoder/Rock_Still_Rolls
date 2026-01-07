@@ -1,5 +1,10 @@
+/* ==========================================================================
+   AuthModal.module.scss - ПОЛНАЯ ВЕРСИЯ
+   ========================================================================== */
+
+/* 1. Основа и Оверлей */
 .overlay {
-  position: absolute;
+  position: fixed; // Изменено на fixed для полной блокировки экрана
   top: 0;
   left: 0;
   right: 0;
@@ -16,14 +21,11 @@
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
+/* 2. Контейнер модального окна */
 .modal {
   background: var(--background-color);
   border-radius: 24px;
@@ -40,11 +42,9 @@
   &::-webkit-scrollbar {
     width: 8px;
   }
-  
   &::-webkit-scrollbar-track {
     background: transparent;
   }
-  
   &::-webkit-scrollbar-thumb {
     background: var(--hover-link-background-color);
     border-radius: 4px;
@@ -62,6 +62,7 @@
   }
 }
 
+/* 3. Кнопка закрытия */
 .closeButton {
   position: absolute;
   top: 1.5rem;
@@ -77,6 +78,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+  z-index: 10;
   
   svg {
     width: 18px;
@@ -89,6 +91,7 @@
   }
 }
 
+/* 4. Заголовки и Текст */
 .header {
   margin-bottom: 2rem;
   text-align: center;
@@ -108,6 +111,7 @@
   opacity: 0.7;
 }
 
+/* 5. Форма и Инпуты */
 .form {
   display: flex;
   flex-direction: column;
@@ -155,6 +159,7 @@
   }
 }
 
+/* 6. Ошибки и Валидация */
 .inputError {
   border-color: #ef4444 !important;
   animation: shake 0.3s;
@@ -175,35 +180,37 @@
 }
 
 @keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Общий блок ошибки (серверные ошибки) */
+.errorMessage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff3f3;
+  border-left: 4px solid #dc3545;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+  animation: shake 0.4s ease-out;
+
+  .errorIcon {
+    width: 20px;
+    height: 20px;
+    color: #dc3545;
+    flex-shrink: 0;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  span {
+    font-size: 14px;
+    color: #721c24;
+    line-height: 1.4;
   }
 }
 
-.forgotPassword {
-  text-align: right;
-  margin-top: -0.5rem;
-}
-
-.link {
-  font-size: 0.875rem;
-  color: var(--color);
-  opacity: 0.5;
-  text-decoration: none;
-  transition: opacity 0.2s;
-  
-  &:hover {
-    opacity: 0.8;
-    text-decoration: none;
-    color: var(--hover-link-background-color);
-  }
-}
-
+/* 7. Кнопки и Спинеры */
 .submitButton {
   width: 100%;
   padding: 0.95rem;
@@ -219,6 +226,9 @@
   margin-top: 0.5rem;
   position: relative;
   min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
   &:hover:not(:disabled) {
     background: var(--hover-link-background-color);
@@ -239,16 +249,39 @@
 
 .spinner {
   display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   border-top-color: currentColor;
   animation: spin 0.6s linear infinite;
+  margin-right: 8px;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* 8. Ссылки и Переключатели */
+.forgotPassword {
+  text-align: right;
+  margin-top: -0.5rem;
+}
+
+.forgotPasswordLink {
+  display: inline-block;
+  color: var(--color);
+  opacity: 0.5;
+  font-size: 0.875rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:hover {
+    opacity: 1;
+    color: var(--hover-link-background-color);
+    text-decoration: underline;
+  }
 }
 
 .footer {
@@ -277,13 +310,9 @@
     text-decoration: none;
     color: var(--hover-link-background-color);
   }
-  
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
 }
 
+/* 9. Разделитель и Соцсети */
 .divider {
   position: relative;
   text-align: center;
@@ -338,11 +367,6 @@
     color: var(--background-color);
     transform: translateY(-2px);
   }
-  
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
 }
 
 .socialIcon {
@@ -350,28 +374,7 @@
   height: 18px;
 }
 
-/* Адаптивность */
-@media (max-width: 640px) {
-  .modal {
-    padding: 2rem 1.5rem;
-    border-radius: 20px;
-  }
-  
-  .title {
-    font-size: 1.2rem;
-  }
-  
-  .socialButtons {
-    grid-template-columns: 1fr;
-  }
-}
-
-
-/* ============================================
-   ДОБАВИТЬ В КОНЕЦ AuthModal.module.scss
-   ============================================ */
-
-/* Success Container */
+/* 10. Успешные состояния (Success) */
 .successContainer {
   text-align: center;
   padding: 40px 20px;
@@ -380,18 +383,13 @@
 .successIcon {
   font-size: 64px;
   margin-bottom: 20px;
+  display: block; // Для корректной анимации
   animation: scaleIn 0.5s ease-out;
 }
 
 @keyframes scaleIn {
-  from {
-    transform: scale(0);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 .successMessage {
@@ -407,7 +405,7 @@
   line-height: 1.5;
 }
 
-/* Info Box */
+/* 11. Дополнительные блоки (Инфо, Навигация) */
 .infoBox {
   background: linear-gradient(135deg, #e7f3ff 0%, #d4e9ff 100%);
   border-left: 4px solid #2196F3;
@@ -424,7 +422,6 @@
   height: 20px;
   color: #2196F3;
   flex-shrink: 0;
-  margin-top: 2px;
 }
 
 .infoText {
@@ -434,7 +431,6 @@
   margin: 0;
 }
 
-/* Back Button */
 .backButton {
   width: 100%;
   padding: 12px;
@@ -450,74 +446,22 @@
 
   &:hover {
     background: var(--hover-link-background-color);
-  }
-
-  &:active {
-    transform: scale(0.98);
+    color: var(--background-color);
   }
 }
 
-/* Spinner для кнопки отправки */
-.spinner {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-  margin-right: 8px;
-  vertical-align: middle;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Адаптация существующих стилей для ForgotPassword */
-.forgotPasswordLink {
-  display: inline-block;
-  color: var(--link-color, #667eea);
-  font-size: 14px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 12px;
-
-  &:hover {
-    color: var(--link-hover-color, #764ba2);
-    text-decoration: underline;
+/* 12. Адаптивность */
+@media (max-width: 640px) {
+  .modal {
+    padding: 2rem 1.5rem;
+    border-radius: 20px;
   }
-}
-
-/* Дополнительные стили для ошибок */
-.errorMessage {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #fff3f3;
-  border-left: 4px solid #dc3545;
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin: 16px 0;
-  animation: shake 0.4s ease-out;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-8px); }
-  75% { transform: translateX(8px); }
-}
-
-.errorIcon {
-  width: 20px;
-  height: 20px;
-  color: #dc3545;
-  flex-shrink: 0;
-}
-
-.errorMessage span {
-  font-size: 14px;
-  color: #721c24;
-  line-height: 1.4;
+  
+  .title {
+    font-size: 1.5rem;
+  }
+  
+  .socialButtons {
+    grid-template-columns: 1fr;
+  }
 }

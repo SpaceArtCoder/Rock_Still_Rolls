@@ -2,13 +2,30 @@ import React, { useState, useEffect } from 'react';
 import styles from './VideoInsertModal.module.scss';
 import { detectVideoPlatform, insertVideoEmbed } from '../../utils/videoParser';
 
+/**
+ * Модальное окно для вставки видео из различных платформ
+ * @param {Object} props - Свойства компонента
+ * @param {boolean} props.isOpen - Открыто ли модальное окно
+ * @param {Function} props.onClose - Функция закрытия модального окна
+ * @param {Function} props.onInsert - Функция вставки видео в редактор
+ */
 const VideoInsertModal = ({ isOpen, onClose, onInsert }) => {
+  // Состояние URL видео
   const [videoUrl, setVideoUrl] = useState('');
+  
+  // Состояние подписи к видео
   const [caption, setCaption] = useState('');
+  
+  // Состояние определения платформы видео
   const [platform, setPlatform] = useState(null);
-  const [embedType, setEmbedType] = useState('html'); // 'html' или 'shortcode'
+  
+  // Состояние типа вставки: HTML или шорткод
+  const [embedType, setEmbedType] = useState('html');
+  
+  // Состояние ошибки
   const [error, setError] = useState('');
 
+  // Сброс состояния при открытии модального окна
   useEffect(() => {
     if (isOpen) {
       setVideoUrl('');
@@ -18,10 +35,12 @@ const VideoInsertModal = ({ isOpen, onClose, onInsert }) => {
     }
   }, [isOpen]);
 
+  // Определение платформы видео при изменении URL
   useEffect(() => {
     if (videoUrl) {
       const detectedPlatform = detectVideoPlatform(videoUrl);
       setPlatform(detectedPlatform);
+      
       if (!detectedPlatform) {
         setError('Не удалось определить платформу. Поддерживаются: YouTube, Vimeo, Rutube, VK Video');
       } else {
@@ -33,6 +52,9 @@ const VideoInsertModal = ({ isOpen, onClose, onInsert }) => {
     }
   }, [videoUrl]);
 
+  /**
+   * Обработчик вставки видео
+   */
   const handleInsert = () => {
     if (!videoUrl) {
       setError('Введите URL видео');
@@ -62,12 +84,17 @@ const VideoInsertModal = ({ isOpen, onClose, onInsert }) => {
     }
   };
 
+  /**
+   * Обработчик нажатия клавиши Escape для закрытия модального окна
+   * @param {KeyboardEvent} e - Событие клавиатуры
+   */
   const handleEscape = (e) => {
     if (e.key === 'Escape') {
       onClose();
     }
   };
 
+  // Добавляем обработчик нажатия клавиши Escape
   useEffect(() => {
     if (isOpen) {
       document.addEventListener('keydown', handleEscape);
@@ -75,8 +102,10 @@ const VideoInsertModal = ({ isOpen, onClose, onInsert }) => {
     }
   }, [isOpen]);
 
+  // Если модальное окно закрыто, не рендерим компонент
   if (!isOpen) return null;
 
+  // Иконки для различных платформ
   const platformIcons = {
     youtube: '🎥',
     vimeo: '📹',
@@ -84,6 +113,7 @@ const VideoInsertModal = ({ isOpen, onClose, onInsert }) => {
     vk: '🎞️'
   };
 
+  // Названия платформ
   const platformNames = {
     youtube: 'YouTube',
     vimeo: 'Vimeo',
@@ -94,12 +124,14 @@ const VideoInsertModal = ({ isOpen, onClose, onInsert }) => {
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        {/* Кнопка закрытия */}
         <button className={styles.closeButton} onClick={onClose}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
+        {/* Заголовок модального окна */}
         <div className={styles.header}>
           <h2 className={styles.title}>📹 Вставить видео</h2>
           <p className={styles.subtitle}>
@@ -107,8 +139,9 @@ const VideoInsertModal = ({ isOpen, onClose, onInsert }) => {
           </p>
         </div>
 
+        {/* Основное содержимое формы */}
         <div className={styles.content}>
-          {/* URL видео */}
+          {/* Поле для ввода URL видео */}
           <div className={styles.inputGroup}>
             <label className={styles.label}>URL видео *</label>
             <input
@@ -119,11 +152,15 @@ const VideoInsertModal = ({ isOpen, onClose, onInsert }) => {
               placeholder="https://www.youtube.com/watch?v=..."
               autoFocus
             />
+            
+            {/* Отображение определенной платформы */}
             {platform && (
               <div className={styles.platformBadge}>
                 {platformIcons[platform]} {platformNames[platform]}
               </div>
             )}
+            
+            {/* Примеры форматов URL */}
             <p className={styles.hint}>
               Примеры форматов:
             </p>
@@ -135,7 +172,7 @@ const VideoInsertModal = ({ isOpen, onClose, onInsert }) => {
             </ul>
           </div>
 
-          {/* Подпись */}
+          {/* Поле для подписи к видео */}
           <div className={styles.inputGroup}>
             <label className={styles.label}>Подпись (опционально)</label>
             <input
@@ -150,7 +187,7 @@ const VideoInsertModal = ({ isOpen, onClose, onInsert }) => {
             </p>
           </div>
 
-          {/* Тип вставки */}
+          {/* Выбор типа вставки */}
           <div className={styles.inputGroup}>
             <label className={styles.label}>Тип вставки</label>
             <div className={styles.radioGroup}>
@@ -180,14 +217,14 @@ const VideoInsertModal = ({ isOpen, onClose, onInsert }) => {
             </p>
           </div>
 
-          {/* Ошибка */}
+          {/* Отображение ошибок */}
           {error && (
             <div className={styles.error}>
               ⚠️ {error}
             </div>
           )}
 
-          {/* Превью кода */}
+          {/* Предварительный просмотр кода */}
           {platform && !error && (
             <div className={styles.preview}>
               <p className={styles.previewLabel}>Будет вставлено:</p>
@@ -200,6 +237,7 @@ const VideoInsertModal = ({ isOpen, onClose, onInsert }) => {
           )}
         </div>
 
+        {/* Кнопки действий */}
         <div className={styles.actions}>
           <button
             className={styles.cancelButton}

@@ -1,67 +1,65 @@
+/**
+ * ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ И НАСТРОЙКИ ТЕМЫ (_variables.scss)
+ * -------------------------------------------------------
+ * Назначение: Централизованное управление дизайном приложения.
+ * Файл содержит SCSS-переменные для логики и CSS-переменные (:root) 
+ * для динамического доступа из браузера.
+ */
+
+// ==========================================
+// 1. ТИПОГРАФИКА И РЕНДЕРИНГ
+// ==========================================
 $font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
 $line-height: 1.5;
 $font-weight: 400;
-$color-scheme: light dark;
-$font_color: rgba(255, 255, 255, 0.87);
-$background-color: #242424;
-$hover-link-background-color: #f7d90c;
-$hover-link-color: #080707;
 $font-synthesis: none;
 $text-rendering: optimizeLegibility;
 $-webkit-font-smoothing: antialiased;
 $-moz-osx-font-smoothing: grayscale;
 
-$breakpoint-sm: 428px; // Small devices (например, телефоны-альбом)
-$breakpoint-md: 760px; // Medium devices (например, планшеты-портрет)
-$breakpoint-lg: 1023px; // Large devices (например, небольшие ноутбуки)
-$breakpoint-lg-next: 1024px;
-$breakpoint-xl: 1280px; // Extra large devices (например, десктопы)
-$breakpoint-xxl: 1400px;
+// ==========================================
+// 2. ЦВЕТОВАЯ ПАЛИТРА
+// ==========================================
+$color-scheme: light dark;
+$font_color: rgba(255, 255, 255, 0.87);
+$background-color: #242424;
+$hover-link-background-color: #f7d90c;
+$hover-link-color: #080707;
 
+// ==========================================
+// 3. СЕТКА И АДАПТИВНОСТЬ (Breakpoints)
+// ==========================================
+// Эти значения используются функциями в _mixins.scss
+$breakpoint-sm: 428px;       // Мобильные (Landscape)
+$breakpoint-md: 760px;       // Планшеты (Portrait)
+$breakpoint-lg: 1023px;      // Малые ноутбуки
+$breakpoint-lg-next: 1024px; // Планшеты (Landscape) / Десктопы
+$breakpoint-xl: 1280px;      // Стандартные десктопы
+$breakpoint-xxl: 1400px;     // Широкоформатные мониторы
+
+// ==========================================
+// 4. ГЛОБАЛЬНЫЕ CSS-ПЕРЕМЕННЫЕ (:root)
+// ==========================================
+/**
+ * Переменные в :root позволяют изменять стили через JavaScript 
+ * и обеспечивают доступ к константам в runtime.
+ */
 :root {
+  // Шрифты
   --font-family: #{$font-family};
   --line-height: #{$line-height};
   --font-weight: #{$font-weight};
 
+  // Цвета и темы
   --color-scheme: #{$color-scheme};
   --color: #{$font_color};
   --background-color: #{$background-color};
   --hover-link-background-color: #{$hover-link-background-color};
   --hover-link-color: #{$hover-link-color};
 
+  // Настройки сглаживания и рендеринга
   --font-synthesis: #{$font-synthesis};
   --text-rendering: #{$text-rendering};
   -webkit-font-smoothing: #{$-webkit-font-smoothing};
   -moz-osx-font-smoothing: #{$-moz-osx-font-smoothing};
 }
-
-//old variables
-
-// :root {
-//   --header-footer-background-color: #{$header-footer-background-color};
-
-//   --color-primary: #{$primary-color}; // Используем SCSS-переменную для значения CSS-переменной
-//   --color-secondary: #6c757d;
-//   --color-success: #28a745;
-//   --color-danger: #dc3545;
-
-//   --color-text-primary: #{$text-color-dark};
-//   --color-text-light: #{$text-color-light};
-//   --color-background-primary: #{$primary-color};
-//   --color-border: #dee2e6;
-//   --color-link: #f2e4ff;
-//   --color-link-hover: #{$primary-color};
-
-//   --font-family-base: #{$font-stack-base};
-//   --font-size-base: 1.6rem; // Обычно 16px, если html font-size: 62.5%
-//   --line-height-base: 1.5;
-
-//   --spacing-xs: 0.5rem;
-//   --spacing-sm: 1rem;
-//   --spacing-md: 2rem;
-//   --spacing-lg: 3rem;
-
-//   --border-radius-base: 0.25rem;
-//   --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-// }
-

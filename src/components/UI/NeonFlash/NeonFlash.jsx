@@ -1,52 +1,67 @@
 import React, { useState, useEffect, useMemo } from 'react';
-// 1. IMPORT styles as an object
 import styles from './NeonFlash.module.scss';
 
-// Utility component to render a word broken down into flickering letters
+/**
+ * Компонент для отображения слова с мерцающими буквами (неоновый эффект)
+ * @param {Object} props - Свойства компонента
+ * @param {string} props.text - Текст для отображения
+ * @param {string} props.className - CSS класс для стилизации цвета
+ */
 const FlickeringWord = ({ text, className }) => {
-    // The state will be an array of booleans (true for 'flash-on', false for 'off')
-    const initialFlashState = useMemo(() => Array.from(text).map(() => true), [text]);
+    // Инициализируем массив состояний для каждой буквы (true - светится, false - погашена)
+    const initialFlashState = useMemo(() => 
+        Array.from(text).map(() => true), 
+        [text]
+    );
+    
     const [isLit, setIsLit] = useState(initialFlashState);
 
     useEffect(() => {
         const letters = Array.from(text);
-        const checkInterval = 50; 
+        const checkInterval = 50; // Интервал проверки в миллисекундах
 
+        /**
+         * Запускает случайное потухание буквы
+         * @param {number} index - Индекс буквы в слове
+         */
         const triggerRandomDim = (index) => {
-            // High random chance (e.g., 1 in 200 letters per interval) of a momentary dim
+            // Вероятность потухания: 0.5% за каждый интервал проверки
             if (Math.random() < 0.005) {
-                // 1. Flash OFF
-                setIsLit(prevLit => prevLit.map((lit, i) => (i === index ? false : lit)));
+                // 1. Гасим букву
+                setIsLit(prevLit => 
+                    prevLit.map((lit, i) => (i === index ? false : lit))
+                );
 
-                // 2. Flash ON after a short, random duration
+                // 2. Включаем букву через случайный промежуток времени
                 const dimDuration = 50 + Math.random() * 150;
                 setTimeout(() => {
-                    setIsLit(prevLit => prevLit.map((lit, i) => (i === index ? true : lit)));
+                    setIsLit(prevLit => 
+                        prevLit.map((lit, i) => (i === index ? true : lit))
+                    );
                 }, dimDuration);
             }
         };
 
+        // Устанавливаем интервал для проверки и потухания букв
         const intervalId = setInterval(() => {
             letters.forEach((_, index) => {
-                // Only try to dim if the letter is currently lit
+                // Пытаемся погасить только те буквы, которые сейчас горят
                 if (isLit[index]) {
                     triggerRandomDim(index);
                 }
             });
         }, checkInterval);
 
-        // Cleanup function to clear the interval
+        // Очистка интервала при размонтировании компонента
         return () => clearInterval(intervalId);
-    }, [text, isLit]); 
+    }, [text, isLit]);
 
-    // Render the letters
+    // Рендерим буквы слова
     return (
-        // Combine the local 'word' class with the external color class (e.g., 'rock')
-        <span className={`${styles.word} ${className}`}> 
+        <span className={`${styles.word} ${className}`}>
             {Array.from(text).map((letter, index) => (
                 <span
                     key={index}
-                    // Apply 'flash-on' class from the imported styles object if lit
                     className={`${styles.letter} ${isLit[index] ? styles['flash-on'] : ''}`}
                 >
                     {letter === ' ' ? '\u00A0' : letter}
@@ -56,14 +71,21 @@ const FlickeringWord = ({ text, className }) => {
     );
 };
 
-// Main component that uses the FlickeringWord
+/**
+ * Основной компонент NeonFlash
+ * Отображает три слова с неоновым мерцающим эффектом
+ */
 const NeonFlash = () => {
     return (
-        // Applying the background container styles using the styles object
         <div className={styles['neon-flash-app-container']}>
             <div className={styles['neon-container']}>
+                {/* Слово "ROCK" с классом для цвета */}
                 <FlickeringWord text="ROCK" className={styles.rock} />
+                
+                {/* Слово "STILL" с классом для цвета */}
                 <FlickeringWord text="STILL" className={styles.still} />
+                
+                {/* Слово "ROLLS" с классом для цвета */}
                 <FlickeringWord text="ROLLS" className={styles.rolls} />
             </div>
         </div>

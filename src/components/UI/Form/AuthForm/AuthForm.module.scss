@@ -1,3 +1,6 @@
+/* Стили для компонента AuthForm */
+
+/* Затемненный оверлей (фон модального окна) */
 .overlay {
   position: absolute;
   top: 0;
@@ -13,6 +16,7 @@
   animation: fadeIn 0.2s ease-out;
 }
 
+/* Анимация появления оверлея */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -22,6 +26,7 @@
   }
 }
 
+/* Модальное окно */
 .modal {
   background: var(--background-color);
   border-radius: 24px;
@@ -49,6 +54,7 @@
   }
 }
 
+/* Анимация появления модального окна */
 @keyframes slideUp {
   from {
     opacity: 0;
@@ -60,6 +66,7 @@
   }
 }
 
+/* Кнопка закрытия */
 .closeButton {
   position: absolute;
   top: 1.5rem;
@@ -87,11 +94,13 @@
   }
 }
 
+/* Заголовок формы */
 .header {
   margin-bottom: 2rem;
   text-align: center;
 }
 
+/* Основной заголовок */
 .title {
   font-size: 1.875rem;
   font-weight: 700;
@@ -100,24 +109,28 @@
   letter-spacing: -0.02em;
 }
 
+/* Подзаголовок */
 .subtitle {
   font-size: 0.95rem;
   color: var(--color);
   opacity: 0.7;
 }
 
+/* Контейнер формы */
 .form {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
 
+/* Группа полей ввода */
 .inputGroup {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
+/* Метка поля */
 .label {
   font-size: 0.875rem;
   font-weight: 600;
@@ -125,6 +138,7 @@
   margin-left: 0.25rem;
 }
 
+/* Поле ввода */
 .input {
   width: 100%;
   padding: 0.875rem 1rem;
@@ -152,17 +166,20 @@
   }
 }
 
+/* Состояние ошибки поля ввода */
 .inputError {
   border-color: #ef4444 !important;
   animation: shake 0.3s;
 }
 
+/* Анимация встряхивания при ошибке */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
   75% { transform: translateX(5px); }
 }
 
+/* Текст ошибки */
 .error {
   font-size: 0.8rem;
   color: #ef4444;
@@ -171,6 +188,7 @@
   animation: slideDown 0.2s ease-out;
 }
 
+/* Анимация появления ошибки */
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -182,11 +200,13 @@
   }
 }
 
+/* Ссылка "Забыли пароль?" */
 .forgotPassword {
   text-align: right;
   margin-top: -0.5rem;
 }
 
+/* Общие стили для ссылок */
 .link {
   font-size: 0.875rem;
   color: var(--hover-link-color);
@@ -199,6 +219,7 @@
   }
 }
 
+/* Кнопка отправки формы */
 .submitButton {
   width: 100%;
   padding: 0.95rem;
@@ -231,6 +252,7 @@
   }
 }
 
+/* Индикатор загрузки */
 .spinner {
   display: inline-block;
   width: 20px;
@@ -241,21 +263,25 @@
   animation: spin 0.6s linear infinite;
 }
 
+/* Анимация вращения индикатора загрузки */
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
+/* Нижняя часть формы */
 .footer {
   margin-top: 1.5rem;
   text-align: center;
 }
 
+/* Текст в нижней части */
 .footerText {
   font-size: 0.9rem;
   color: var(--color);
   opacity: 0.8;
 }
 
+/* Кнопка переключения (вход/регистрация) */
 .switchButton {
   background: none;
   border: none;
@@ -276,6 +302,7 @@
   }
 }
 
+/* Разделитель с текстом */
 .divider {
   position: relative;
   text-align: center;
@@ -292,6 +319,7 @@
   }
 }
 
+/* Текст разделителя */
 .dividerText {
   position: relative;
   display: inline-block;
@@ -303,12 +331,14 @@
   font-weight: 500;
 }
 
+/* Контейнер социальных кнопок */
 .socialButtons {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
 }
 
+/* Кнопки социальных сетей */
 .socialButton {
   display: flex;
   align-items: center;
@@ -336,12 +366,13 @@
   }
 }
 
+/* Иконка социальной сети */
 .socialIcon {
   width: 18px;
   height: 18px;
 }
 
-/* Адаптивность */
+/* Адаптивность для мобильных устройств */
 @media (max-width: 640px) {
   .modal {
     padding: 2rem 1.5rem;

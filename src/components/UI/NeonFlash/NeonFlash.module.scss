@@ -1,13 +1,14 @@
 @use '../../../assets/styles/abstracts/mixins.scss' as mixins;
 
+/* Подключение шрифта Oooh Baby */
 @font-face {
     font-family: "Oooh Baby";
     src: url('../../../assets/fonts/OoohBaby-Regular.ttf') format('truetype');
 }
 
-/* Container/Background Styles */
+/* Основной контейнер приложения */
 .neon-flash-app-container {
-    background-color: var(--background-color); 
+    background-color: var(--background-color);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -17,66 +18,72 @@
     font-weight: 800;
     font-style: normal;
     text-transform: uppercase;
-    width: 50%; 
+    width: 50%;
+    
+    /* Адаптивность для маленьких экранов */
     @include mixins.max-width(sm) {
         width: 100%;
     }
 }
 
+/* Контейнер для неонового текста */
 .neon-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    line-height: 0.8; 
+    line-height: 0.8;
 }
 
+/* Стили для слова */
 .word {
     font-size: 8rem;
     padding: 0 1rem;
     position: relative;
-    color: transparent; 
-    text-shadow: none; 
+    color: transparent;
+    text-shadow: none;
+    
+    /* Адаптивность для маленьких экранов */
     @include mixins.max-width(sm) {
         font-size: 6rem;
     }
 
-    @include mixins.width-rage(md, lg) {
+    /* Адаптивность для средних экранов */
+    @include mixins.width-range(md, lg) {
         font-size: 6.4rem;
     }
 }
 
+/* Стили для отдельной буквы */
 .letter {
-    display: inline-block; 
-    transition: all 0.1s ease-in-out; 
+    display: inline-block;
+    transition: all 0.1s ease-in-out;
 }
 
+/* --- Переменные цветов и определения --- */
 
-/* --- Color Variables and Definitions (These classes will be outside the module import 
-       but the styles still work as they set CSS custom properties) --- */
-
-/* Yellow (Road Marking) */
+/* Желтый цвет (дорожная разметка) для слов "ROCK" и "ROLLS" */
 .rock, .rolls {
-    --light-color: #f7d90c; 
+    --light-color: #f7d90c;
 }
 
-/* Red (Blood) */
+/* Красный цвет (кровь) для слова "STILL" */
 .still {
-    --light-color: #c21113; 
+    --light-color: #c21113;
 }
 
-
-/* --- The "Light On" State --- */
+/* --- Состояние "Свет включен" --- */
 
 .flash-on {
-    /* Tube body is now bright white */
-    color: #ffffff !important; 
+    /* Тело трубки теперь ярко-белое */
+    color: #ffffff !important;
 
-    /* Soft, diffused glow */
+    /* Мякое, рассеянное свечение */
     text-shadow: 
-        0 0 5px var(--light-color), 
-        0 0 15px var(--light-color), 
+        0 0 5px var(--light-color),
+        0 0 15px var(--light-color),
         0 0 30px var(--light-color),
-        0 0 50px var(--light-color) !important; 
+        0 0 50px var(--light-color) !important;
     
-    transition: all 0s; 
+    /* Мгновенный переход для эффекта мерцания */
+    transition: all 0s;
 }

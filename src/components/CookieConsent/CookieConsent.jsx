@@ -1,27 +1,36 @@
-// src/components/CookieConsent/CookieConsent.jsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './CookieConsent.module.scss';
 
+/**
+ * Компонент баннера согласия на использование cookies.
+ * Позволяет пользователям выбирать типы cookies и сохранять свои предпочтения.
+ */
 const CookieConsent = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [preferences, setPreferences] = useState({
-    necessary: true, // Всегда включено
-    analytics: false,
-    marketing: false,
-    functional: false,
+    necessary: true, // Обязательные cookies - всегда включены
+    analytics: false, // Аналитические cookies
+    marketing: false, // Маркетинговые cookies
+    functional: false, // Функциональные cookies
   });
 
+  /**
+   * Проверяет сохраненные настройки cookies при монтировании компонента.
+   * Показывает баннер, если согласие не было дано ранее.
+   */
   useEffect(() => {
-    // Проверяем, дал ли пользователь согласие
     const consent = localStorage.getItem('cookieConsent');
     if (!consent) {
-      // Небольшая задержка для лучшего UX
       setTimeout(() => setIsVisible(true), 1000);
     }
   }, []);
 
+  /**
+   * Обрабатывает принятие всех типов cookies.
+   * Сохраняет полное согласие в localStorage и инициализирует все трекеры.
+   */
   const handleAcceptAll = () => {
     const allAccepted = {
       necessary: true,
@@ -32,13 +41,14 @@ const CookieConsent = () => {
     };
     
     localStorage.setItem('cookieConsent', JSON.stringify(allAccepted));
-    
-    // Здесь можно инициализировать трекинг (Google Analytics и т.д.)
     initializeTracking(allAccepted);
-    
     setIsVisible(false);
   };
 
+  /**
+   * Обрабатывает принятие только необходимых cookies.
+   * Сохраняет минимальные настройки в localStorage.
+   */
   const handleAcceptNecessary = () => {
     const necessaryOnly = {
       necessary: true,
@@ -52,6 +62,10 @@ const CookieConsent = () => {
     setIsVisible(false);
   };
 
+  /**
+   * Сохраняет выбранные пользователем настройки cookies.
+   * Инициализирует только разрешенные трекеры.
+   */
   const handleSavePreferences = () => {
     const savedPreferences = {
       ...preferences,
@@ -59,13 +73,14 @@ const CookieConsent = () => {
     };
     
     localStorage.setItem('cookieConsent', JSON.stringify(savedPreferences));
-    
-    // Инициализируем только разрешенные трекеры
     initializeTracking(savedPreferences);
-    
     setIsVisible(false);
   };
 
+  /**
+   * Инициализирует трекеры в зависимости от предоставленного согласия.
+   * @param {Object} consent - Объект с настройками согласия
+   */
   const initializeTracking = (consent) => {
     // Google Analytics
     if (consent.analytics && window.gtag) {
@@ -79,12 +94,15 @@ const CookieConsent = () => {
       window.fbq('consent', 'grant');
     }
 
-    // Можно добавить другие трекеры
-    console.log('Tracking initialized with consent:', consent);
+    console.log('Трекинг инициализирован с настройками:', consent);
   };
 
+  /**
+   * Переключает состояние конкретного типа cookies.
+   * @param {string} key - Ключ типа cookies
+   */
   const handleToggle = (key) => {
-    if (key === 'necessary') return; // Нельзя отключить необходимые
+    if (key === 'necessary') return; // Нельзя отключить необходимые cookies
     setPreferences(prev => ({
       ...prev,
       [key]: !prev[key]
@@ -103,9 +121,10 @@ const CookieConsent = () => {
         />
       )}
 
+      {/* Основной контейнер баннера */}
       <div className={`${styles.cookieConsent} ${showSettings ? styles.expanded : ''}`}>
         {!showSettings ? (
-          // Основной баннер
+          // Основной баннер с краткой информацией
           <div className={styles.banner}>
             <div className={styles.content}>
               <div className={styles.icon}>
@@ -132,6 +151,7 @@ const CookieConsent = () => {
               </div>
             </div>
 
+            {/* Кнопки действий основного баннера */}
             <div className={styles.actions}>
               <button 
                 className={styles.settingsButton}
@@ -154,7 +174,7 @@ const CookieConsent = () => {
             </div>
           </div>
         ) : (
-          // Расширенные настройки
+          // Расширенные настройки cookies
           <div className={styles.settings}>
             <div className={styles.settingsHeader}>
               <h3>Настройки Cookie</h3>
@@ -168,8 +188,9 @@ const CookieConsent = () => {
               </button>
             </div>
 
+            {/* Список типов cookies с переключателями */}
             <div className={styles.settingsContent}>
-              {/* Необходимые cookies */}
+              {/* Необходимые cookies (обязательные) */}
               <div className={styles.cookieOption}>
                 <div className={styles.optionHeader}>
                   <div className={styles.optionInfo}>
@@ -265,6 +286,7 @@ const CookieConsent = () => {
               </div>
             </div>
 
+            {/* Кнопки действий расширенных настроек */}
             <div className={styles.settingsActions}>
               <button 
                 className={styles.rejectButton}

@@ -21,7 +21,7 @@
                     width: 100%;
                     height: 20rem;
                     border-radius: 0.8rem 0.8rem 0 0;
-                    @include mixins.width-rage(xl, xxl) {
+                    @include mixins.width-range(xl, xxl) {
                         height: 18rem;
                     }
                 }
@@ -45,13 +45,13 @@
                 @include mixins.max-width(sm) {
                     overflow: scroll;
                 }
-                @include mixins.width-rage(md, lg) {
+                @include mixins.width-range(md, lg) {
                     overflow:scroll;
                 }
-                @include mixins.width-rage(lgn, lgn) {
+                @include mixins.width-range(lgn, lgn) {
                     overflow:scroll;
                 }
-                @include mixins.width-rage(xl, xxl) {
+                @include mixins.width-range(xl, xxl) {
                     overflow:scroll;
                 }
                 @include mixins.min-width(xxl) {

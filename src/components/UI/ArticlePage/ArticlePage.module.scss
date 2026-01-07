@@ -1,30 +1,24 @@
-
 .article_block {
     padding: 20px;
-    max-Width: 800px;
+    max-width: 800px;
     margin: 0 auto;
     color: var(--color);
     font-family: "Roboto Flex", sans-serif;
     line-height: 2rem;
+    
     h1 {
         font-size: 1.4rem;
         margin-bottom: 1.5rem;
         color: var(--color);
     }
+    
     .pub_date {
         color: #666;
         font-size: 1rem;
     }
 }
 
-// Добавьте эти стили в ваш существующий ArticlePage.module.scss
-
-.article_block {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
+/* Главное изображение статьи */
 .featuredImage {
   max-width: 100%;
   height: auto;
@@ -33,12 +27,14 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* Дата публикации */
 .pub_date {
   font-size: 0.9rem;
   color: #666;
   margin-bottom: 2rem;
 }
 
+/* Состояния загрузки, ошибки и отсутствия статьи */
 .loading,
 .error,
 .notFound {
@@ -51,19 +47,21 @@
   color: #ef4444;
 }
 
+/* Содержимое статьи с поддержкой Markdown */
 .article_content {
   line-height: 1.5;
   color: var(--color);
 
+  /* Стили для обычного текста */
   p {
     font-size: 1.1rem;
   }
 
-  // Стили для видео контента
+  /* Контейнер для встроенного видео */
   :global(.video-embed) {
     margin: 2rem 0;
     
-    // Контейнер iframe с соотношением сторон 16:9
+    /* Контейнер iframe с адаптивным соотношением сторон 16:9 */
     > div {
       position: relative;
       padding-bottom: 56.25%;
@@ -84,6 +82,7 @@
       }
     }
     
+    /* Подпись к видео */
     figcaption {
       margin-top: 0.75rem;
       font-size: 0.9em;
@@ -94,7 +93,7 @@
     }
   }
 
-  // Специфичные стили для разных платформ
+  /* Специальные эмодзи для разных видеоплатформ */
   :global(.video-embed-youtube) {
     figcaption::before {
       content: "🎥 ";
@@ -119,7 +118,7 @@
     }
   }
 
-  // Стили для изображений внутри figure
+  /* Стили для изображений с подписями */
   figure {
     margin: 2rem 0;
     text-align: center;
@@ -139,7 +138,7 @@
     }
   }
 
-  // Общие стили для markdown контента
+  /* Стили для заголовков Markdown */
   h1, h2, h3, h4, h5, h6 {
     margin-top: 2rem;
     margin-bottom: 1rem;
@@ -159,10 +158,12 @@
     font-size: 1.4rem;
   }
 
+  /* Стили для абзацев */
   p {
     margin-bottom: 1.2rem;
   }
 
+  /* Стили для списков */
   ul, ol {
     margin-bottom: 1.2rem;
     padding-left: 2rem;
@@ -172,6 +173,7 @@
     margin-bottom: 0.5rem;
   }
 
+  /* Стили для ссылок */
   a {
     color: var(--hover-link-color);
     text-decoration: none;
@@ -183,6 +185,7 @@
     }
   }
 
+  /* Стили для цитат */
   blockquote {
     border-left: 4px solid var(--hover-link-color);
     padding-left: 1.5rem;
@@ -191,6 +194,7 @@
     color: #666;
   }
 
+  /* Стили для inline-кода */
   code {
     background: var(--hover-link-background-color);
     padding: 0.2rem 0.4rem;
@@ -199,6 +203,7 @@
     font-size: 0.9em;
   }
 
+  /* Стили для блоков кода */
   pre {
     background: var(--hover-link-background-color);
     padding: 1rem;
@@ -212,6 +217,7 @@
     }
   }
 
+  /* Стили для таблиц */
   table {
     width: 100%;
     border-collapse: collapse;
@@ -230,7 +236,7 @@
   }
 }
 
-// Адаптивность для мобильных устройств
+/* Адаптивность для мобильных устройств */
 @media (max-width: 768px) {
   .article_block {
     padding: 1rem;
@@ -239,6 +245,7 @@
   .article_content {
     font-size: 1rem;
 
+    /* Адаптивные размеры заголовков */
     h1 {
       font-size: 1.6rem;
     }
@@ -251,6 +258,7 @@
       font-size: 1.2rem;
     }
 
+    /* Адаптивные стили для видео */
     :global(.video-embed) {
       margin: 1.5rem 0;
 
@@ -262,7 +270,7 @@
   }
 }
 
-// Дополнительные эффекты при наведении на видео
+/* Эффекты при наведении для видео (только на устройствах с hover) */
 @media (hover: hover) {
   .article_content {
     :global(.video-embed) > div {

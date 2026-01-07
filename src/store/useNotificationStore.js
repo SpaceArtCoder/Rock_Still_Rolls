@@ -1,153 +1,184 @@
-// src/store/useNotificationStore.js (ИСПРАВЛЕННЫЙ)
 import { create } from 'zustand';
 import axios from 'axios';
 
-const API_BASE_URL = 'https://uncramped-robbin-patrimonial.ngrok-free.dev/api/notifications';
+// Базовый URL API уведомлений
+const API_BASE_URL = 'http://localhost:5000/api/notifications';
 
-// Настройка axios для отправки cookies
+// Настройка axios для отправки cookies при запросах
 axios.defaults.withCredentials = true;
 
+/**
+ * Хранилище уведомлений на Zustand
+ * Управляет получением, обновлением и удалением уведомлений пользователя
+ */
 const useNotificationStore = create((set, get) => ({
-  // Состояние
-  notifications: [],
-  unreadCount: 0,
-  loading: false,
-  error: null,
+    // Состояние хранилища
+    notifications: [],   // Массив всех уведомлений пользователя
+    unreadCount: 0,     // Количество непрочитанных уведомлений
+    loading: false,     // Флаг загрузки данных
+    error: null,        // Сообщение об ошибке
 
-  // 1. Загрузить все уведомления
-  fetchNotifications: async () => {
-    set({ loading: true, error: null });
-    
-    try {
-      const response = await axios.get(API_BASE_URL);
-      const notifications = response.data;
-      
-      // ИСПРАВЛЕНО: Всегда подсчитываем непрочитанные при загрузке
-      const unreadCount = notifications.filter(n => !n.read).length;
-      
-      set({
-        notifications,
-        unreadCount, // ИСПРАВЛЕНО: Обновляем счетчик
-        loading: false
-      });
-    } catch (error) {
-      console.error('Ошибка загрузки уведомлений:', error);
-      set({
-        error: error.response?.data?.error || 'Не удалось загрузить уведомления',
-        loading: false
-      });
-    }
-  },
-
-  // 2. Получить только количество непрочитанных (легкий запрос)
-  fetchUnreadCount: async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/unread-count`);
-      set({ unreadCount: response.data.count });
-    } catch (error) {
-      console.error('Ошибка получения количества:', error);
-      // ДОБАВЛЕНО: При ошибке устанавливаем 0
-      set({ unreadCount: 0 });
-    }
-  },
-
-  // 3. Отметить уведомление как прочитанное
-  markAsRead: async (notificationId) => {
-    try {
-      await axios.put(`${API_BASE_URL}/${notificationId}/read`);
-      
-      // Обновляем локальное состояние
-      set(state => {
-        // УЛУЧШЕНО: Проверяем, было ли уведомление непрочитанным
-        const notification = state.notifications.find(n => n.id === notificationId);
-        const wasUnread = notification && !notification.read;
+    /**
+     * Загрузить все уведомления пользователя
+     * Обновляет список уведомлений и счетчик непрочитанных
+     */
+    fetchNotifications: async () => {
+        set({ loading: true, error: null });
         
-        return {
-          notifications: state.notifications.map(n =>
-            n.id === notificationId ? { ...n, read: true } : n
-          ),
-          unreadCount: wasUnread ? Math.max(0, state.unreadCount - 1) : state.unreadCount
-        };
-      });
-    } catch (error) {
-      console.error('Ошибка обновления уведомления:', error);
-    }
-  },
+        try {
+            const response = await axios.get(API_BASE_URL);
+            const notifications = response.data;
+            
+            // Подсчет непрочитанных уведомлений при загрузке
+            const unreadCount = notifications.filter(n => !n.read).length;
+            
+            set({
+                notifications,
+                unreadCount,
+                loading: false
+            });
+        } catch (error) {
+            console.error('Ошибка загрузки уведомлений:', error);
+            set({
+                error: error.response?.data?.error || 'Не удалось загрузить уведомления',
+                loading: false
+            });
+        }
+    },
 
-  // 4. Отметить все как прочитанные
-  markAllAsRead: async () => {
-    try {
-      await axios.put(`${API_BASE_URL}/mark-all-read`);
-      
-      // Обновляем локальное состояние
-      set(state => ({
-        notifications: state.notifications.map(n => ({ ...n, read: true })),
-        unreadCount: 0
-      }));
-    } catch (error) {
-      console.error('Ошибка обновления уведомлений:', error);
-    }
-  },
+    /**
+     * Получить только количество непрочитанных уведомлений
+     * Легкий запрос без загрузки полного списка уведомлений
+     */
+    fetchUnreadCount: async () => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/unread-count`);
+            set({ unreadCount: response.data.count });
+        } catch (error) {
+            console.error('Ошибка получения количества:', error);
+            // Устанавливаем 0 при ошибке
+            set({ unreadCount: 0 });
+        }
+    },
 
-  // 5. Удалить уведомление
-  deleteNotification: async (notificationId) => {
-    try {
-      await axios.delete(`${API_BASE_URL}/${notificationId}`);
-      
-      // Обновляем локальное состояние
-      set(state => {
-        const notification = state.notifications.find(n => n.id === notificationId);
-        const wasUnread = notification && !notification.read;
-        
-        return {
-          notifications: state.notifications.filter(n => n.id !== notificationId),
-          unreadCount: wasUnread ? Math.max(0, state.unreadCount - 1) : state.unreadCount
-        };
-      });
-    } catch (error) {
-      console.error('Ошибка удаления уведомления:', error);
-    }
-  },
+    /**
+     * Отметить одно уведомление как прочитанное
+     * @param {string} notificationId - ID уведомления
+     */
+    markAsRead: async (notificationId) => {
+        try {
+            await axios.put(`${API_BASE_URL}/${notificationId}/read`);
+            
+            // Обновление локального состояния
+            set(state => {
+                // Проверяем, было ли уведомление непрочитанным
+                const notification = state.notifications.find(n => n.id === notificationId);
+                const wasUnread = notification && !notification.read;
+                
+                return {
+                    // Обновляем статус уведомления
+                    notifications: state.notifications.map(n =>
+                        n.id === notificationId ? { ...n, read: true } : n
+                    ),
+                    // Уменьшаем счетчик если уведомление было непрочитанным
+                    unreadCount: wasUnread ? Math.max(0, state.unreadCount - 1) : state.unreadCount
+                };
+            });
+        } catch (error) {
+            console.error('Ошибка обновления уведомления:', error);
+        }
+    },
 
-  // 6. Удалить все прочитанные
-  clearRead: async () => {
-    try {
-      await axios.delete(`${API_BASE_URL}/clear-read`);
-      
-      // Обновляем локальное состояние
-      // ИСПРАВЛЕНО: Счетчик не меняется, т.к. удаляем только прочитанные
-      set(state => ({
-        notifications: state.notifications.filter(n => !n.read)
-        // unreadCount остается прежним
-      }));
-    } catch (error) {
-      console.error('Ошибка удаления уведомлений:', error);
-    }
-  },
+    /**
+     * Отметить все уведомления как прочитанные
+     */
+    markAllAsRead: async () => {
+        try {
+            await axios.put(`${API_BASE_URL}/mark-all-read`);
+            
+            // Обновление локального состояния
+            set(state => ({
+                // Отмечаем все уведомления как прочитанные
+                notifications: state.notifications.map(n => ({ ...n, read: true })),
+                // Сбрасываем счетчик непрочитанных
+                unreadCount: 0
+            }));
+        } catch (error) {
+            console.error('Ошибка обновления уведомлений:', error);
+        }
+    },
 
-  // 7. НОВОЕ: Удалить все уведомления (для кнопки "Удалить все")
-  deleteAll: async () => {
-    try {
-      // Получаем все ID уведомлений
-      const notificationIds = get().notifications.map(n => n.id);
-      
-      // Удаляем каждое уведомление
-      await Promise.all(
-        notificationIds.map(id => axios.delete(`${API_BASE_URL}/${id}`))
-      );
-      
-      // Обновляем локальное состояние
-      set({
-        notifications: [],
-        unreadCount: 0
-      });
-    } catch (error) {
-      console.error('Ошибка удаления всех уведомлений:', error);
-    }
-  },
+    /**
+     * Удалить одно уведомление
+     * @param {string} notificationId - ID уведомления для удаления
+     */
+    deleteNotification: async (notificationId) => {
+        try {
+            await axios.delete(`${API_BASE_URL}/${notificationId}`);
+            
+            // Обновление локального состояния
+            set(state => {
+                const notification = state.notifications.find(n => n.id === notificationId);
+                const wasUnread = notification && !notification.read;
+                
+                return {
+                    // Удаляем уведомление из списка
+                    notifications: state.notifications.filter(n => n.id !== notificationId),
+                    // Уменьшаем счетчик если уведомление было непрочитанным
+                    unreadCount: wasUnread ? Math.max(0, state.unreadCount - 1) : state.unreadCount
+                };
+            });
+        } catch (error) {
+            console.error('Ошибка удаления уведомления:', error);
+        }
+    },
 
-  // 8. Очистить ошибку
-  clearError: () => set({ error: null })
+    /**
+     * Удалить все прочитанные уведомления
+     */
+    clearRead: async () => {
+        try {
+            await axios.delete(`${API_BASE_URL}/clear-read`);
+            
+            // Обновление локального состояния
+            set(state => ({
+                // Удаляем только прочитанные уведомления
+                notifications: state.notifications.filter(n => !n.read)
+                // Счетчик непрочитанных остается неизменным
+            }));
+        } catch (error) {
+            console.error('Ошибка удаления уведомлений:', error);
+        }
+    },
+
+    /**
+     * Удалить все уведомления пользователя
+     * Используется для кнопки "Удалить все"
+     */
+    deleteAll: async () => {
+        try {
+            // Получаем все ID уведомлений для удаления
+            const notificationIds = get().notifications.map(n => n.id);
+            
+            // Удаляем все уведомления параллельно
+            await Promise.all(
+                notificationIds.map(id => axios.delete(`${API_BASE_URL}/${id}`))
+            );
+            
+            // Сброс состояния
+            set({
+                notifications: [],
+                unreadCount: 0
+            });
+        } catch (error) {
+            console.error('Ошибка удаления всех уведомлений:', error);
+        }
+    },
+
+    /**
+     * Очистить сообщение об ошибке
+     */
+    clearError: () => set({ error: null })
 }));
 
 export default useNotificationStore;

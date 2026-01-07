@@ -1,5 +1,4 @@
-// src/components/CookieConsent/CookieConsent.module.scss
-
+/* Затемняющий фон при открытых настройках */
 .overlay {
   position: fixed;
   inset: 0;
@@ -13,6 +12,7 @@
   }
 }
 
+/* Основной контейнер баннера cookies */
 .cookieConsent {
   position: fixed;
   bottom: 0;
@@ -30,6 +30,7 @@
     }
   }
 
+  /* Расширенный вид для настроек */
   &.expanded {
     bottom: 0;
     left: 50%;
@@ -49,7 +50,7 @@
   }
 }
 
-// ===== ОСНОВНОЙ БАННЕР =====
+/* ===== ОСНОВНОЙ БАННЕР ===== */
 .banner {
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   color: white;
@@ -151,6 +152,7 @@
   }
 }
 
+/* Кнопка принятия всех cookies */
 .acceptButton {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
@@ -161,6 +163,7 @@
   }
 }
 
+/* Кнопка отказа от всех, кроме необходимых cookies */
 .rejectButton {
   background: rgba(255, 255, 255, 0.1);
   color: white;
@@ -171,6 +174,7 @@
   }
 }
 
+/* Кнопка перехода к настройкам */
 .settingsButton {
   background: transparent;
   color: white;
@@ -182,7 +186,7 @@
   }
 }
 
-// ===== НАСТРОЙКИ =====
+/* ===== НАСТРОЙКИ ===== */
 .settings {
   background: white;
   color: #1e293b;
@@ -272,6 +276,7 @@
   input[type="checkbox"] {
     display: none;
 
+    /* Стили для включенного переключателя */
     &:checked + label .toggleSlider {
       background: #10b981;
 
@@ -280,6 +285,7 @@
       }
     }
 
+    /* Стили для отключенного переключателя */
     &:disabled + label .toggleSlider {
       opacity: 0.5;
       cursor: not-allowed;
@@ -294,6 +300,7 @@
   }
 }
 
+/* Стили ползунка переключателя */
 .toggleSlider {
   position: relative;
   display: block;
@@ -336,6 +343,7 @@
   }
 }
 
+/* Кнопка сохранения настроек */
 .saveButton {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
