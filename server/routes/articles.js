@@ -1,34 +1,35 @@
 import express from 'express';
 import prisma from '../../prisma/client.js';
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs/promises';
+import multer from 'multer'; 
+import path from 'path'; 
+import fs from 'fs/promises'; 
 
-const router = express.Router();
+const router = express.Router(); // Инициализация маршрутизатора Express
 
-// 1. Настройка Multer
+// 1. Настройка Multer для обработки загрузки изображений
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        cb(null, 'uploads/'); // Указываем папку для хранения загруженных файлов
     },
     filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9); // Уникальное имя для файла
+        cb(null, uniqueSuffix + path.extname(file.originalname)); // Преобразуем имя файла, добавляя уникальный суффикс
     }
 });
 
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }
+    limits: { fileSize: 5 * 1024 * 1024 } // Ограничение на размер файла (5 MB)
 });
 
 // ------------------------------------
 // A. CREATE: POST /api/articles
 // ------------------------------------
 router.post('/', upload.single('imageFile'), async (req, res) => {
-    const { title, content, excerpt, slug, status, categoryName } = req.body;
-    const urlToImage = req.file ? `/uploads/${req.file.filename}` : undefined;
+    const { title, content, excerpt, slug, status, categoryName } = req.body; // Получаем данные из тела запроса
+    const urlToImage = req.file ? `/uploads/${req.file.filename}` : undefined; // Сохраняем путь к изображению, если оно загружено
 
+    // Проверяем, что все обязательные поля присутствуют
     if (!title || !content || !slug) {
         if (req.file) {
             try { await fs.unlink(req.file.path); } catch (err) { console.error('Failed to delete file:', err); }
@@ -37,6 +38,7 @@ router.post('/', upload.single('imageFile'), async (req, res) => {
     }
 
     try {
+        // Определяем категории для статьи в зависимости от переданных данных
         let categoriesToConnect = [];
 
         if (categoryName === 'События') {
@@ -47,11 +49,12 @@ router.post('/', upload.single('imageFile'), async (req, res) => {
             categoriesToConnect = ['Новости'];
         }
 
+        // Создаем новую статью в базе данных через Prisma
         const newArticle = await prisma.article.create({
             data: {
                 title, content, excerpt, slug,
                 image: urlToImage,
-                status: status || 'draft',
+                status: status || 'draft', // Если статус не передан, ставим 'draft' по умолчанию
                 categories: {
                     create: categoriesToConnect.map(name => ({
                         category: {
@@ -67,11 +70,11 @@ router.post('/', upload.single('imageFile'), async (req, res) => {
             }
         });
 
-        res.status(201).json(newArticle);
+        res.status(201).json(newArticle); // Возвращаем информацию о новой статье
 
     } catch (error) {
         if (error.code === 'P2002') {
-            return res.status(409).json({ error: 'The provided URL Slug already exists.' });
+            return res.status(409).json({ error: 'The provided URL Slug already exists.' }); // Ошибка, если slug уже существует
         }
         if (error.message.includes('Record to connect was not found')) {
             return res.status(400).json({ error: `One of the required categories does not exist in the database.` });
@@ -81,21 +84,20 @@ router.post('/', upload.single('imageFile'), async (req, res) => {
 });
 
 // ------------------------------------
-// INFINITE SCROLL PAGINATION (ПЕРЕМЕЩЕНО СЮДА!)
+// INFINITE SCROLL PAGINATION
 // GET /api/articles/paginated
 // ------------------------------------
 router.get('/paginated', async (req, res) => {
-    console.log('📊 Paginated request:', req.query);
-
-    const { category, cursor, limit = 10 } = req.query;
+    const { category, cursor, limit = 10 } = req.query; // Получаем параметры запроса (категория, курсор, лимит)
 
     const take = parseInt(limit);
     const cursorId = cursor ? parseInt(cursor) : null;
 
-    let categoryFilterName = category ? decodeURIComponent(category) : null;
+    let categoryFilterName = category ? decodeURIComponent(category) : null; // Расшифровка категории
 
     let whereCondition = {};
 
+    // Формируем условие для поиска по категории
     if (categoryFilterName) {
         if (categoryFilterName === 'Новости') {
             whereCondition.categories = {
@@ -116,9 +118,10 @@ router.get('/paginated', async (req, res) => {
     }
 
     try {
+        // Получаем статьи с пагинацией
         const articles = await prisma.article.findMany({
             where: whereCondition,
-            take: take + 1,
+            take: take + 1, // Загружаем на одну статью больше для определения наличия следующей страницы
             ...(cursorId && {
                 skip: 1,
                 cursor: { id: cursorId }
@@ -138,10 +141,8 @@ router.get('/paginated', async (req, res) => {
         });
 
         const hasMore = articles.length > take;
-        const resultArticles = hasMore ? articles.slice(0, -1) : articles;
+        const resultArticles = hasMore ? articles.slice(0, -1) : articles; // Если есть больше, убираем лишнюю статью
         const nextCursor = hasMore ? resultArticles[resultArticles.length - 1].id : null;
-
-        console.log(`✅ Returning ${resultArticles.length} articles, hasMore: ${hasMore}`);
 
         res.json({
             articles: resultArticles,
@@ -150,7 +151,6 @@ router.get('/paginated', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('❌ Pagination error:', error);
         res.status(500).json({
             error: 'Failed to fetch articles',
             details: error.message
@@ -159,16 +159,18 @@ router.get('/paginated', async (req, res) => {
 });
 
 // ------------------------------------
-// SEARCH
+// SEARCH: GET /api/articles/search
 // ------------------------------------
 router.get('/search', async (req, res) => {
     const searchQuery = req.query.q;
 
+    // Если поисковый запрос пустой, возвращаем пустой массив
     if (!searchQuery || searchQuery.trim() === '') {
         return res.json([]);
     }
 
     try {
+        // Поиск по заголовку, содержимому и аннотации
         const articles = await prisma.$queryRaw`
             SELECT 
                 a.id, 
@@ -189,6 +191,7 @@ router.get('/search', async (req, res) => {
             LIMIT 10
         `;
 
+        // Форматируем результаты поиска
         const formattedArticles = articles.map(article => ({
             id: Number(article.id),
             title: article.title,
@@ -203,7 +206,6 @@ router.get('/search', async (req, res) => {
         res.json(formattedArticles);
 
     } catch (error) {
-        console.error('Search error:', error);
         res.status(500).json({ error: 'Search failed.', details: error.message });
     }
 });
@@ -233,6 +235,7 @@ router.get('/', async (req, res) => {
 
     let whereCondition = {};
 
+    // Фильтрация по категориям
     if (categoryFilterName) {
         if (categoryFilterName === 'Новости') {
             whereCondition.categories = {
@@ -259,6 +262,7 @@ router.get('/', async (req, res) => {
     }
 
     try {
+        // Получаем все статьи с возможностью фильтрации по категориям
         const articles = await prisma.article.findMany({
             where: whereCondition,
             orderBy: {
@@ -296,6 +300,7 @@ router.put('/:id', upload.single('imageFile'), async (req, res) => {
     };
 
     try {
+        // Удаление старых категорий
         await prisma.articleOnCategory.deleteMany({
             where: { articleId: articleId },
         });
@@ -319,6 +324,7 @@ router.put('/:id', upload.single('imageFile'), async (req, res) => {
             }
         }
 
+        // Добавление новых категорий
         const categoryData = categoriesToConnect.map(catId => ({
             articleId: articleId,
             categoryId: catId,
@@ -331,6 +337,7 @@ router.put('/:id', upload.single('imageFile'), async (req, res) => {
             });
         }
 
+        // Обновляем статью
         const updatedArticle = await prisma.article.update({
             where: { id: articleId },
             data: articleUpdateData,
@@ -369,4 +376,5 @@ router.post('/upload-image', upload.single('uploadFile'), (req, res) => {
     res.json({ url: imageUrl, message: 'Image uploaded successfully.' });
 });
 
-export default router;
+export default router; 
+

@@ -1,71 +1,69 @@
-import crypto from 'crypto';
-import nodemailer from 'nodemailer';
-import express from 'express';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import prisma from '../../prisma/client.js';
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs/promises';
+import crypto from 'crypto'; 
+import nodemailer from 'nodemailer'; 
+import express from 'express'; 
+import bcrypt from 'bcrypt'; 
+import jwt from 'jsonwebtoken'; 
+import prisma from '../../prisma/client.js'; 
+import multer from 'multer'; 
+import path from 'path'; 
+import fs from 'fs/promises'; 
 
-const router = express.Router();
-// eslint-disable-next-line no-undef
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = '1h';
+const router = express.Router(); // Инициализация маршрутизатора Express
 
-// НОВАЯ КОНСТАНТА: Настройки cookie
+// Константы для JWT
+const JWT_SECRET = process.env.JWT_SECRET; // Секрет для подписания токенов
+const JWT_EXPIRES_IN = '1h'; // Время жизни токена (1 час)
+
+// Настройки cookie для хранения токена аутентификации
 const COOKIE_OPTIONS = {
-    httpOnly: true, // JavaScript не может прочитать (защита от XSS)
-    // eslint-disable-next-line no-undef
-    secure: process.env.NODE_ENV === 'production', // Только HTTPS в production
-    sameSite: 'lax', // Защита от CSRF
-    maxAge: 60 * 60 * 1000, // 1 час в миллисекундах
-    path: '/' // Cookie доступен для всех путей
+    httpOnly: true, // Запрещаем доступ из JavaScript (защита от XSS атак)
+    secure: process.env.NODE_ENV === 'production', // Только HTTPS в продакшн
+    sameSite: 'lax', // Защита от CSRF атак
+    maxAge: 60 * 60 * 1000, // Время жизни cookie (1 час)
+    path: '/' // Cookie доступно для всех путей
 };
 
-// --- ОБНОВЛЕННЫЙ Middleware для защиты маршрутов ---
+// Middleware для защиты маршрутов, проверяет наличие и валидность токена
 const protect = (req, res, next) => {
-    // ИЗМЕНЕНИЕ: Читаем токен из cookies вместо заголовка Authorization
-    const token = req.cookies.authToken;
+    const token = req.cookies.authToken; // Читаем токен из cookies
 
     if (!token) {
         return res.status(401).json({ error: 'Доступ запрещен: Токен не предоставлен.' });
     }
 
     try {
-        const decoded = jwt.verify(token, JWT_SECRET);
-        req.userId = decoded.userId; 
+        const decoded = jwt.verify(token, JWT_SECRET); // Проверяем токен
+        req.userId = decoded.userId; // Добавляем userId в запрос
         next();
     } catch (err) {
         return res.status(401).json({ error: 'Токен недействителен или истек.' });
     }
 };
 
-// 1. Настройка Multer для аватаров (без изменений)
+// Настройка Multer для загрузки аватаров
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/avatars/'); 
+        cb(null, 'uploads/avatars/'); // Указываем папку для загрузки
     },
     filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9); // Генерируем уникальное имя файла
+        cb(null, uniqueSuffix + path.extname(file.originalname)); // Преобразуем имя файла
     }
 });
 
 const upload = multer({ 
     storage: storage,
-    limits: { fileSize: 2 * 1024 * 1024 },
+    limits: { fileSize: 2 * 1024 * 1024 }, // Ограничение на размер файла (2MB)
     fileFilter: (req, file, cb) => {
-        if (file.mimetype.startsWith('image/')) {
+        if (file.mimetype.startsWith('image/')) { // Проверяем, что файл - изображение
             cb(null, true);
         } else {
-            cb(new Error('Only images are allowed.'), false);
+            cb(new Error('Only images are allowed.'), false); // Ошибка если файл не изображение
         }
     }
 });
 
-
-// 2. Функция серверной валидации (без изменений)
+// Функция для валидации регистрации
 const validateRegistration = (name, email, password, confirmPassword) => {
     const errors = {};
     if (!name || name.length < 2) {
@@ -83,22 +81,21 @@ const validateRegistration = (name, email, password, confirmPassword) => {
     return errors;
 };
 
-
-// 3. ОБНОВЛЕННЫЙ Маршрут регистрации: POST /api/auth/register
+// Маршрут регистрации пользователя
 router.post('/register', upload.single('avatarFile'), async (req, res) => {
     const { name, email, password, confirmPassword } = req.body;
     const avatarPath = req.file ? `/uploads/avatars/${req.file.filename}` : null;
 
-    const validationErrors = validateRegistration(name, email, password, confirmPassword);
+    const validationErrors = validateRegistration(name, email, password, confirmPassword); // Валидация данных
     if (Object.keys(validationErrors).length > 0) {
-        if (req.file) {
+        if (req.file) { // Удаляем файл, если валидация не прошла
             try { await fs.unlink(req.file.path); } catch (e) { console.error('Failed to delete failed upload:', e); }
         }
         return res.status(400).json({ errors: validationErrors });
     }
 
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10); // Хешируем пароль
 
         const newUser = await prisma.user.create({
             data: {
@@ -110,13 +107,7 @@ router.post('/register', upload.single('avatarFile'), async (req, res) => {
             select: { id: true, email: true, name: true, avatarUrl: true, isAdmin: true }
         });
 
-        // ИЗМЕНЕНИЕ: Генерируем JWT и устанавливаем cookie
-        // const token = jwt.sign({ userId: newUser.id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
-        
-        // Устанавливаем cookie
-        // res.cookie('authToken', token, COOKIE_OPTIONS);
-
-        // Отправляем только данные пользователя (без токена)
+        // Отправляем успешный ответ без токена
         res.status(201).json({ 
             user: newUser, 
             message: 'Регистрация прошла успешно!' 
@@ -135,8 +126,7 @@ router.post('/register', upload.single('avatarFile'), async (req, res) => {
     }
 });
 
-
-// 4. ОБНОВЛЕННЫЙ Маршрут входа: POST /api/auth/login
+// Маршрут входа в систему
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
@@ -161,22 +151,21 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ errors: { general: 'Неверный email или пароль.' } });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await bcrypt.compare(password, user.password); // Проверка пароля
 
         if (!isPasswordValid) {
             return res.status(401).json({ errors: { general: 'Неверный email или пароль.' } });
         }
-        
-        // ИЗМЕНЕНИЕ: Генерируем JWT и устанавливаем cookie
+
+        // Генерация JWT токена
         const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
         
-        // Устанавливаем cookie
+        // Устанавливаем cookie с токеном
         res.cookie('authToken', token, COOKIE_OPTIONS);
 
-        // Убираем пароль из объекта
+        // Убираем пароль из ответа
         const { password: _, ...userData } = user;
 
-        // Отправляем только данные пользователя (без токена)
         res.json({ 
             user: userData, 
             message: 'Вход выполнен успешно!' 
@@ -188,8 +177,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-
-// 5. Маршрут для получения данных пользователя: GET /api/auth/me
+// Маршрут для получения данных текущего пользователя
 router.get('/me', protect, async (req, res) => {
     try {
         const user = await prisma.user.findUnique({
@@ -208,37 +196,26 @@ router.get('/me', protect, async (req, res) => {
     }
 });
 
-
-// 6. НОВЫЙ Маршрут для выхода: POST /api/auth/logout
+// Маршрут для выхода пользователя
 router.post('/logout', (req, res) => {
-    // Удаляем cookie, устанавливая maxAge в 0
-    res.cookie('authToken', '', {
-        ...COOKIE_OPTIONS,
-        maxAge: 0
-    });
-
+    // Удаляем cookie
+    res.cookie('authToken', '', { ...COOKIE_OPTIONS, maxAge: 0 });
     res.json({ message: 'Выход выполнен успешно!' });
 });
 
-
-// 7. Обновление профиля: PUT /api/auth/profile
+// Маршрут для обновления профиля пользователя
 router.put('/profile', protect, upload.single('avatarFile'), async (req, res) => {
     try {
         const userId = req.userId;
         const { name } = req.body;
 
         if (!name || name.trim().length < 2) {
-            if (req.file) {
-                try { await fs.unlink(req.file.path); } catch (e) { /* silent */ }
-            }
+            if (req.file) { try { await fs.unlink(req.file.path); } catch (e) { /* silent */ } }
             return res.status(400).json({ error: 'Имя должно содержать минимум 2 символа' });
         }
 
-        const updateData = {
-            name: name.trim()
-        };
+        const updateData = { name: name.trim() };
 
-        // Если загружен новый аватар
         if (req.file) {
             // Удаляем старый аватар
             const oldUser = await prisma.user.findUnique({
@@ -257,7 +234,6 @@ router.put('/profile', protect, upload.single('avatarFile'), async (req, res) =>
             updateData.avatarUrl = `/uploads/avatars/${req.file.filename}`;
         }
 
-        // ИСПРАВЛЕНО: Убрано createdAt из select
         const updatedUser = await prisma.user.update({
             where: { id: userId },
             data: updateData,
@@ -276,15 +252,13 @@ router.put('/profile', protect, upload.single('avatarFile'), async (req, res) =>
         });
 
     } catch (error) {
-        if (req.file) {
-            try { await fs.unlink(req.file.path); } catch (e) { /* silent */ }
-        }
+        if (req.file) { try { await fs.unlink(req.file.path); } catch (e) { /* silent */ } }
         console.error('Profile update error:', error);
         res.status(500).json({ error: 'Не удалось обновить профиль' });
     }
 });
 
-// 8. Смена пароля: PUT /api/auth/password
+// Маршрут для смены пароля
 router.put('/password', protect, async (req, res) => {
     try {
         const userId = req.userId;
@@ -298,7 +272,6 @@ router.put('/password', protect, async (req, res) => {
             return res.status(400).json({ error: 'Новый пароль должен быть не менее 8 символов' });
         }
 
-        // Получаем текущего пользователя
         const user = await prisma.user.findUnique({
             where: { id: userId },
             select: { password: true }
@@ -308,17 +281,14 @@ router.put('/password', protect, async (req, res) => {
             return res.status(404).json({ error: 'Пользователь не найден' });
         }
 
-        // Проверяем текущий пароль
         const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
 
         if (!isPasswordValid) {
             return res.status(401).json({ error: 'Неверный текущий пароль' });
         }
 
-        // Хешируем новый пароль
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-        // Обновляем пароль
         await prisma.user.update({
             where: { id: userId },
             data: { password: hashedPassword }
@@ -332,18 +302,16 @@ router.put('/password', protect, async (req, res) => {
     }
 });
 
-// 9. Удаление аккаунта: DELETE /api/auth/account
+// Маршрут для удаления аккаунта
 router.delete('/account', protect, async (req, res) => {
     try {
         const userId = req.userId;
 
-        // Получаем пользователя с аватаром
         const user = await prisma.user.findUnique({
             where: { id: userId },
             select: { avatarUrl: true }
         });
 
-        // Удаляем аватар если есть
         if (user?.avatarUrl) {
             try {
                 await fs.unlink(`.${user.avatarUrl}`);
@@ -352,16 +320,11 @@ router.delete('/account', protect, async (req, res) => {
             }
         }
 
-        // Удаляем пользователя (каскадно удалятся комментарии, уведомления и т.д.)
         await prisma.user.delete({
             where: { id: userId }
         });
 
-        // Удаляем cookie
-        res.cookie('authToken', '', {
-            ...COOKIE_OPTIONS,
-            maxAge: 0
-        });
+        res.cookie('authToken', '', { ...COOKIE_OPTIONS, maxAge: 0 });
 
         res.json({ message: 'Аккаунт успешно удален' });
 
@@ -371,26 +334,13 @@ router.delete('/account', protect, async (req, res) => {
     }
 });
 
-
-// Настройка email-транспорта (после импортов)
+// Настройка почтового транспорта для отправки email
 const emailTransporter = nodemailer.createTransport({
-    // Для Gmail
     service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER, // Ваш email
-        pass: process.env.EMAIL_PASSWORD // Пароль приложения Gmail
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD
     }
-
-    // Или для другого SMTP
-    /*
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
-    secure: true,
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD
-    }
-    */
 });
 
 // Функция генерации случайного пароля
@@ -406,10 +356,9 @@ function generateRandomPassword(length = 12) {
     return password;
 }
 
-// Функция отправки email с красивым HTML
+// Функция для отправки email с новым паролем
 async function sendPasswordResetEmail(email, newPassword, userName) {
     const htmlTemplate = `
-    <!DOCTYPE html>
     <html>
     <head>
         <meta charset="UTF-8">
@@ -600,7 +549,7 @@ async function sendPasswordResetEmail(email, newPassword, userName) {
     await emailTransporter.sendMail(mailOptions);
 }
 
-// 10. НОВЫЙ МАРШРУТ: Восстановление пароля
+// Маршрут для восстановления пароля
 router.post('/forgot-password', async (req, res) => {
     try {
         const { email } = req.body;
@@ -611,7 +560,6 @@ router.post('/forgot-password', async (req, res) => {
             });
         }
 
-        // Проверяем существование пользователя
         const user = await prisma.user.findUnique({
             where: { email: email.toLowerCase() },
             select: { id: true, email: true, name: true }
@@ -623,18 +571,15 @@ router.post('/forgot-password', async (req, res) => {
             });
         }
 
-        // Генерируем новый пароль
-        const newPassword = generateRandomPassword(12);
+        const newPassword = generateRandomPassword(12); // Генерация нового пароля
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-        // Обновляем пароль в БД
         await prisma.user.update({
             where: { id: user.id },
             data: { password: hashedPassword }
         });
 
-        // Отправляем email
-        await sendPasswordResetEmail(user.email, newPassword, user.name);
+        await sendPasswordResetEmail(user.email, newPassword, user.name); // Отправка email
 
         res.json({
             success: true,
@@ -644,7 +589,6 @@ router.post('/forgot-password', async (req, res) => {
     } catch (error) {
         console.error('Password reset error:', error);
 
-        // Обработка ошибок email
         if (error.code === 'EAUTH' || error.code === 'ESOCKET') {
             return res.status(500).json({
                 error: 'Ошибка отправки email. Проверьте настройки почтового сервера.'
@@ -660,3 +604,4 @@ router.post('/forgot-password', async (req, res) => {
 
 export { protect };
 export default router;
+

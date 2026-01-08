@@ -1,31 +1,31 @@
-// server/routes/comments.js (ПОЛНОСТЬЮ ИСПРАВЛЕННЫЙ - с правильным запросом категорий)
-import express from 'express';
-import prisma from '../../prisma/client.js';
-import { protect } from './auth.js';
-import { createNotification } from './notifications.js';
+import express from 'express'; 
+import prisma from '../../prisma/client.js'; 
+import { protect } from './auth.js'; 
+import { createNotification } from './notifications.js'; 
 
-const router = express.Router();
+const router = express.Router(); // Инициализация маршрутизатора Express
 
 // 1. Получить все комментарии для статьи
 router.get('/:articleSlug', async (req, res) => {
     try {
-        const { articleSlug } = req.params;
+        const { articleSlug } = req.params; // Получаем slug статьи из параметров
 
+        // Получаем все комментарии для статьи, сортируя по дате
         const comments = await prisma.comment.findMany({
             where: {
                 article: {
-                    slug: articleSlug
+                    slug: articleSlug // Фильтрация по slug статьи
                 } 
             },
             include: {
                 author: {
-                    select: { id: true, name: true, avatarUrl: true }
+                    select: { id: true, name: true, avatarUrl: true } // Включаем информацию об авторе комментария
                 }
             },
-            orderBy: { createdAt: 'asc' }
+            orderBy: { createdAt: 'asc' } // Сортировка по дате создания
         });
 
-        res.json(comments);
+        res.json(comments); // Отправляем комментарии в ответ
     } catch (error) {
         console.error('Ошибка при загрузке комментариев:', error);
         res.status(500).json({ error: 'Не удалось загрузить комментарии.' });
@@ -35,28 +35,21 @@ router.get('/:articleSlug', async (req, res) => {
 // 2. Добавить комментарий (с уведомлениями)
 router.post('/', protect, async (req, res) => {
     try {
-        const { articleSlug, content, parentId } = req.body;
-        const authorId = req.userId;
+        const { articleSlug, content, parentId } = req.body; // Получаем данные из тела запроса
+        const authorId = req.userId; // Получаем ID текущего пользователя из middleware protect
 
+        // Проверка, что комментарий не пустой
         if (!content || content.trim().length === 0) {
             return res.status(400).json({ error: 'Комментарий не может быть пустым.' });
         }
 
-        // ИСПРАВЛЕНО: Правильный запрос к категориям через промежуточную таблицу
+        // Получаем статью, к которой добавляется комментарий
         const article = await prisma.article.findUnique({
             where: { slug: articleSlug },
             select: { 
                 id: true, 
-                authorId: true,
-                categories: {
-                    select: {
-                        category: {
-                            select: {
-                                name: true
-                            }
-                        }
-                    }
-                }
+                authorId: true, // Получаем ID автора статьи
+                categories: { select: { category: { select: { name: true } } } } // Получаем категории статьи
             }
         });
 
@@ -66,13 +59,13 @@ router.post('/', protect, async (req, res) => {
 
         const articleId = article.id;
 
-        // Создаем комментарий
+        // Создаем новый комментарий
         const newComment = await prisma.comment.create({
             data: {
                 content,
                 articleId,
                 authorId,
-                parentId: parentId || null
+                parentId: parentId || null // Если это ответ на другой комментарий, сохраняем parentId
             },
             include: {
                 author: {
@@ -84,9 +77,7 @@ router.post('/', protect, async (req, res) => {
         // ========================================
         // СОЗДАНИЕ УВЕДОМЛЕНИЙ
         // ========================================
-
-        // ИСПРАВЛЕНО: Правильное получение имени категории
-        let categoryPath = 'news'; // по умолчанию
+        let categoryPath = 'news'; // По умолчанию категория 'news'
         if (article.categories && article.categories.length > 0) {
             const categoryName = article.categories[0].category.name.toLowerCase();
             if (categoryName === 'события') categoryPath = 'events';
@@ -104,7 +95,7 @@ router.post('/', protect, async (req, res) => {
 
             if (parentComment && parentComment.authorId !== authorId) {
                 await createNotification({
-                    userId: parentComment.authorId,
+                    userId: parentComment.authorId, // Отправляем уведомление автору родительского комментария
                     type: 'COMMENT_REPLY',
                     message: `${newComment.author.name} ответил на ваш комментарий`,
                     link: articleLink,
@@ -115,7 +106,7 @@ router.post('/', protect, async (req, res) => {
         } else if (article.authorId && article.authorId !== authorId) {
             // Новый комментарий к статье
             await createNotification({
-                userId: article.authorId,
+                userId: article.authorId, // Уведомление автору статьи
                 type: 'NEW_COMMENT',
                 message: `${newComment.author.name} прокомментировал вашу статью`,
                 link: articleLink,
@@ -124,7 +115,7 @@ router.post('/', protect, async (req, res) => {
             });
         }
 
-        res.status(201).json(newComment);
+        res.status(201).json(newComment); // Возвращаем созданный комментарий
 
     } catch (error) {
         console.error('Ошибка при создании комментария:', error);
@@ -135,14 +126,16 @@ router.post('/', protect, async (req, res) => {
 // 3. Обновить комментарий
 router.put('/:id', protect, async (req, res) => {
     try {
-        const commentId = parseInt(req.params.id);
-        const { content } = req.body;
-        const userId = req.userId;
+        const commentId = parseInt(req.params.id); // Получаем ID комментария
+        const { content } = req.body; // Получаем новое содержание комментария
+        const userId = req.userId; // Получаем ID пользователя
 
+        // Проверка, что содержание комментария не пустое
         if (!content || content.trim().length === 0) {
             return res.status(400).json({ error: 'Комментарий не может быть пустым.' });
         }
 
+        // Получаем комментарий по ID
         const comment = await prisma.comment.findUnique({
             where: { id: commentId }
         });
@@ -155,12 +148,13 @@ router.put('/:id', protect, async (req, res) => {
             return res.status(403).json({ error: 'У вас нет прав на редактирование этого комментария.' });
         }
 
+        // Обновляем комментарий
         const updatedComment = await prisma.comment.update({
             where: { id: commentId },
             data: { content }
         });
 
-        res.json(updatedComment);
+        res.json(updatedComment); // Возвращаем обновленный комментарий
     } catch (error) {
         console.error('Ошибка при обновлении комментария:', error);
         res.status(500).json({ error: 'Не удалось обновить комментарий.' });
@@ -170,13 +164,14 @@ router.put('/:id', protect, async (req, res) => {
 // 4. Удалить комментарий
 router.delete('/:id', protect, async (req, res) => {
     try {
-        const commentId = parseInt(req.params.id);
-        const userId = req.userId;
+        const commentId = parseInt(req.params.id); // Получаем ID комментария
+        const userId = req.userId; // Получаем ID пользователя
 
+        // Получаем комментарий по ID
         const comment = await prisma.comment.findUnique({
             where: { id: commentId },
             include: {
-                author: { select: { id: true } }
+                author: { select: { id: true } } // Включаем информацию о владельце комментария
             }
         });
 
@@ -184,20 +179,22 @@ router.delete('/:id', protect, async (req, res) => {
             return res.status(404).json({ error: 'Комментарий не найден.' });
         }
 
+        // Получаем данные пользователя
         const user = await prisma.user.findUnique({
             where: { id: userId },
-            select: { isAdmin: true }
+            select: { isAdmin: true } // Проверяем, является ли пользователь администратором
         });
 
         if (comment.authorId !== userId && !user.isAdmin) {
             return res.status(403).json({ error: 'У вас нет прав на удаление этого комментария.' });
         }
 
+        // Удаляем комментарий
         await prisma.comment.delete({
             where: { id: commentId }
         });
 
-        res.json({ message: 'Комментарий удалён.' });
+        res.json({ message: 'Комментарий удалён.' }); // Возвращаем сообщение об успешном удалении
     } catch (error) {
         console.error('Ошибка при удалении комментария:', error);
         res.status(500).json({ error: 'Не удалось удалить комментарий.' });
@@ -206,25 +203,25 @@ router.delete('/:id', protect, async (req, res) => {
 
 // 5. Голосование (с уведомлениями о лайках)
 router.post('/:id/vote', protect, async (req, res) => {
-    const commentId = parseInt(req.params.id);
-    const userId = req.userId;
-    const { type } = req.body; // 'LIKE' или 'DISLIKE'
-    
+    const commentId = parseInt(req.params.id); // Получаем ID комментария
+    const userId = req.userId; // Получаем ID пользователя
+    const { type } = req.body; // Тип голоса (LIKE или DISLIKE)
+
     if (type !== 'LIKE' && type !== 'DISLIKE') {
         return res.status(400).json({ error: 'Invalid vote type.' });
     }
 
     try {
-        // Проверяем существующий голос
+        // Проверяем, есть ли уже голос от пользователя
         const existingVote = await prisma.commentVote.findUnique({
             where: { userId_commentId: { userId, commentId } }
         });
 
-        // ИСПРАВЛЕНО: Правильный запрос к категориям
+        // Получаем информацию о комментарии
         const comment = await prisma.comment.findUnique({
             where: { id: commentId },
             include: {
-                author: { select: { id: true, name: true } },
+                author: { select: { id: true, name: true } }, // Информация об авторе комментария
                 article: {
                     select: {
                         slug: true,
@@ -314,7 +311,6 @@ router.post('/:id/vote', protect, async (req, res) => {
                 select: { name: true }
             });
 
-            // ИСПРАВЛЕНО: Правильное получение имени категории
             let categoryPath = 'news';
             if (comment.article.categories && comment.article.categories.length > 0) {
                 const categoryName = comment.article.categories[0].category.name.toLowerCase();
@@ -342,3 +338,4 @@ router.post('/:id/vote', protect, async (req, res) => {
 });
 
 export default router;
+
